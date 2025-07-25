@@ -1,6 +1,8 @@
 ﻿using DapperAPI.DTOs;
+using DapperAPI.Repositories;
 using DapperAPI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace DapperAPI.Controllers
 {
@@ -9,10 +11,12 @@ namespace DapperAPI.Controllers
     public class AuthController : ControllerBase
     {
         private readonly AuthService _auth;
+        private readonly ILogger<CustomerRepository> _logger;
 
-        public AuthController(AuthService auth)
+        public AuthController(AuthService auth, ILogger<CustomerRepository> logger)
         {
             _auth = auth;
+            _logger = logger;
         }
 
         [HttpPost("register")]

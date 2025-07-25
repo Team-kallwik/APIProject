@@ -17,8 +17,8 @@ namespace DapperAPI.Repositories
 
         public async Task EnsureTableExistsAsync()
         {
-            var sql = @"-- use same table creation SQL here";
-            await Connection.ExecuteAsync(sql);
+            await Connection.ExecuteAsync("EnsureCustomerTableExists", commandType: CommandType.StoredProcedure);
+
         }
 
         public async Task<IEnumerable<Customer>> GetAllAsync()
