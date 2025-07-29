@@ -25,6 +25,31 @@ class _DoctorsListPageState extends State<DoctorsListPage> {
       'rating': 4.9,
       'image': 'https://via.placeholder.com/150',
     },
+    {
+      'name': 'Dr. Priyansh Pal',
+      'specialty': 'Neurologist',
+      'rating': 4.9,
+      'image': 'https://via.placeholder.com/150',
+    },
+    {
+      'name': 'Dr. Vaishnavi Bajpai',
+      'specialty': 'Veterinary Ophthalmologist',
+      'rating': 3.8,
+      'image': 'https://via.placeholder.com/150',
+    },
+    {
+      'name': 'Dr. Vikas Tiwari',
+      'specialty': 'Dermatologist',
+      'rating': 4.6,
+      'image': 'https://via.placeholder.com/150',
+    },
+    {
+      'name': 'Dr.Dhananjay singh Panwar',
+      'specialty': 'Dentist',
+      'rating': 4.8,
+      'image': 'https://via.placeholder.com/150',
+    },
+
   ];
 
   String searchQuery = '';
@@ -91,7 +116,7 @@ class _DoctorsListPageState extends State<DoctorsListPage> {
                     ),
                     trailing: ElevatedButton(
                       onPressed: () {},
-                      child: Text('Book Now'),
+                      child: Text('Book Now',style: TextStyle(color: Colors.white),),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.teal,
                       ),
