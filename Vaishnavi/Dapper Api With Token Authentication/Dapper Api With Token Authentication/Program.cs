@@ -10,9 +10,10 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//Serilog configuration read from appsettings.json
+// Configure Serilog from appsettings.json
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext() // Adds request-specific details like trace id
     .CreateLogger();
 
 builder.Host.UseSerilog(); // Attach Serilog
@@ -22,7 +23,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
-// JWT Authentication Configuration
+// JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -39,7 +40,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// Swagger with JWT Authorization
+// Swagger with JWT
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Dapper Api With Token Authentication", Version = "v1" });
@@ -79,6 +80,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseSerilogRequestLogging(); //Important for request logging
+
 app.UseAuthentication();
 app.UseAuthorization();
 

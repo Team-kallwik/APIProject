@@ -17,32 +17,72 @@ namespace Dapper_Api_With_Token_Authentication.Services.Implementation
 
         public async Task<IEnumerable<Emp>> GetAllAsync()
         {
-            _logger.LogInformation("Service: Getting all employees");
-            return await _repo.GetAllAsync();
+            try
+            {
+                _logger.LogInformation("Service: Getting all employees");
+                return await _repo.GetAllAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Service: Error getting all employees");
+                throw;
+            }
         }
 
         public async Task<Emp> GetByIdAsync(int id)
         {
-            _logger.LogInformation("Service: Getting employee by ID {Id}", id);
-            return await _repo.GetByIdAsync(id);
+            try
+            {
+                _logger.LogInformation("Service: Getting employee by ID {Id}", id);
+                return await _repo.GetByIdAsync(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Service: Error getting employee by ID {Id}", id);
+                throw;
+            }
         }
 
         public async Task<int> AddAsync(Emp emp)
         {
-            _logger.LogInformation("Service: Adding new employee {@Employee}", emp);
-            return await _repo.AddAsync(emp);
+            try
+            {
+                _logger.LogInformation("Service: Adding new employee {@Employee}", emp);
+                return await _repo.AddAsync(emp);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Service: Error adding employee {@Employee}", emp);
+                throw;
+            }
         }
 
         public async Task<int> UpdateAsync(Emp emp)
         {
-            _logger.LogInformation("Service: Updating employee {@Employee}", emp);
-            return await _repo.UpdateAsync(emp);
+            try
+            {
+                _logger.LogInformation("Service: Updating employee {@Employee}", emp);
+                return await _repo.UpdateAsync(emp);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Service: Error updating employee {@Employee}", emp);
+                throw;
+            }
         }
 
         public async Task<int> DeleteAsync(int id)
         {
-            _logger.LogInformation("Service: Deleting employee with ID {Id}", id);
-            return await _repo.DeleteAsync(id);
+            try
+            {
+                _logger.LogInformation("Service: Deleting employee with ID {Id}", id);
+                return await _repo.DeleteAsync(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Service: Error deleting employee ID {Id}", id);
+                throw;
+            }
         }
     }
 }
