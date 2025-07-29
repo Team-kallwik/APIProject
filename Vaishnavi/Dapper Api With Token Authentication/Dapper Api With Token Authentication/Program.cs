@@ -6,8 +6,16 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//Serilog configuration read from appsettings.json
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+builder.Host.UseSerilog(); // Attach Serilog
 
 // Add services
 builder.Services.AddControllers();
@@ -34,7 +42,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Swagger with JWT Authorization
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "WithAuthentication API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Dapper Api With Token Authentication", Version = "v1" });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -63,7 +71,7 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Configure middleware
+// Middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -71,8 +79,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-//Must be in this order
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -10,21 +10,25 @@ using Dapper;
 using Dapper_Api_With_Token_Authentication.Model;
 
 namespace Dapper_Api_With_Token_Authentication.Controllers
-
 {
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
         private readonly IConfiguration _config;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IConfiguration config)
+        public AuthController(IConfiguration config, ILogger<AuthController> logger)
         {
             _config = config;
+            _logger = logger;
         }
+
         [HttpPost("register")]
         public IActionResult Register(User newUser)
         {
+            _logger.LogInformation("Register API called with Username: {Username}", newUser.Username);
+
             try
             {
                 var json = JsonSerializer.Serialize(new[] { newUser });
@@ -45,14 +49,16 @@ namespace Dapper_Api_With_Token_Authentication.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during registration for Username: {Username}", newUser.Username);
                 return StatusCode(500, new { message = "Error occurred while registering", error = ex.Message });
             }
         }
 
-
         [HttpPost("login")]
         public IActionResult Login(User login)
         {
+            _logger.LogInformation("Login attempt for Username: {Username}", login.Username);
+
             try
             {
                 var json = JsonSerializer.Serialize(new[] { login });
@@ -67,20 +73,25 @@ namespace Dapper_Api_With_Token_Authentication.Controllers
 
                 if (result == "Success")
                 {
+                    _logger.LogInformation("Login successful for Username: {Username}", login.Username);
                     var token = GenerateToken(login.Username);
                     return Ok(new { token });
                 }
 
+                _logger.LogWarning("Invalid login attempt for Username: {Username}", login.Username);
                 return Unauthorized("Invalid credentials");
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error during login for Username: {Username}", login.Username);
                 return StatusCode(500, new { message = "An error occurred while logging in", error = ex.Message });
             }
         }
 
         private string GenerateToken(string username)
         {
+            _logger.LogInformation("Generating JWT token for Username: {Username}", username);
+
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
