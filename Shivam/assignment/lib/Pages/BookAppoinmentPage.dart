@@ -29,7 +29,11 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
               DropdownButtonFormField<String>(
                 decoration: InputDecoration(
                   labelText: "Select Doctor",
-                  border: OutlineInputBorder(),
+              labelStyle: TextStyle(color: Colors.black,fontSize: 15),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.teal),
+              ),
+              border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.person),
                 ),
                 items: doctorList
@@ -50,6 +54,10 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                 readOnly: true,
                 decoration: InputDecoration(
                   labelText: 'Select Date',
+                  labelStyle: TextStyle(color: Colors.black,fontSize: 15),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.teal),
+                  ),
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.calendar_today),
                 ),
@@ -77,6 +85,10 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                 readOnly: true,
                 decoration: InputDecoration(
                   labelText: 'Select Time',
+                  labelStyle: TextStyle(color: Colors.black,fontSize: 15),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.teal),
+                  ),
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.access_time),
                 ),
@@ -103,6 +115,10 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
                 maxLines: 3,
                 decoration: InputDecoration(
                   labelText: 'Symptoms/Concerns',
+                  labelStyle: TextStyle(color: Colors.black,fontSize: 15),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.teal),
+                  ),
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.notes),
                 ),
@@ -112,8 +128,14 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
               SizedBox(height: 24),
 
               ElevatedButton.icon(
-                icon: Icon(Icons.check_circle_outline),
-                label: Text("Confirm Appointment"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                icon: Icon(Icons.check_circle_outline,color: Colors.white),
+                label: Text("Confirm Appointment",style: TextStyle(color: Colors.white,fontSize: 15)),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     // Booking logic here

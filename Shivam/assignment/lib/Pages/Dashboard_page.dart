@@ -6,6 +6,7 @@ import 'package:assignment/Pages/settings.dart';
 import 'package:flutter/material.dart';
 
 import 'package:assignment/Pages/Health_record_page.dart';
+import 'package:get/get.dart';
 
 class DashboardPage extends StatefulWidget {
   @override
@@ -31,14 +32,9 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: BackButton(
-          color: Colors.black,
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Colors.teal,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         items: const [
@@ -60,14 +56,19 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final List<String> appointments = const [
-    "Dr. Sharma - 29 July",
-    "Dr. Mehta - 31 July",
-    "Dr. Verma - 2 Aug",
+    "Dr. Yaju - 29 July",
+    "Dr. Kashish- 31 July",
+    "Dr. Pritam - 2 Aug",
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: BackButton(),
+        title: const Text("Home",style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -91,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 separatorBuilder: (_, __) => const SizedBox(width: 10),
                 itemBuilder: (context, index) {
                   return Card(
+                    color: Colors.teal,
                     elevation: 3,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -100,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         horizontal: 16,
                         vertical: 12,
                       ),
-                      child: Center(child: Text(appointments[index])),
+                      child: Center(child: Text(appointments[index],style: TextStyle(fontSize: 16,color: Colors.white,fontWeight: FontWeight.bold),)),
                     ),
                   );
                 },
@@ -123,27 +125,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   icon: Icons.add_circle,
                   label: 'Book Appointment',
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>BookAppointmentPage()));
+                    Get.to(BookAppointmentPage());
                   },
                 ),
                 ActionTile(
                   icon: Icons.folder,
                   label: 'Health Records',
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => HealthRecordsPage()),
-                  ),
+                  onTap: () => Get.to(HealthRecordsPage())
                 ),
                 ActionTile(
                   icon: Icons.medical_services,
                   label: 'View Doctors',
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => DoctorsListPage()),
-                  ),
+                  onTap: () => Get.to(DoctorsListPage())
                 ),
                 ActionTile(icon: Icons.settings, label: 'Settings', onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=> Setting()));
+                  Get.to(Setting());
                 }),
               ],
             ),
@@ -169,8 +165,10 @@ class ActionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Card(
+        color: Colors.teal,
         elevation: 4,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
@@ -178,11 +176,11 @@ class ActionTile extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 40, color: Colors.teal),
+              Icon(icon, size: 40, color: Colors.white),
               const SizedBox(height: 12),
               Text(
                 label,
-                style: const TextStyle(fontSize: 14),
+                style: const TextStyle(fontSize: 14,color: Colors.white,fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
             ],

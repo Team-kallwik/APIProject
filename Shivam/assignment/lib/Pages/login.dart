@@ -1,6 +1,7 @@
 import 'package:assignment/Pages/Dashboard_page.dart';
 import 'package:assignment/Pages/register_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -22,17 +23,13 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             SizedBox(height: 80),
             // Optional logo
-            Image.asset('assets/images/logo.png', height: 100),
+            Image.asset('assets/images/logo.png', height: 100,fit: BoxFit.cover,),
             SizedBox(height: 20),
             Text(
-              "Welcome Back",
+              "Login to continue",
               style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 10),
-            Text(
-              "Login to continue",
-              style: TextStyle(color: Colors.grey[600]),
-            ),
+
             SizedBox(height: 40),
             TextField(
               controller: emailController,
@@ -40,7 +37,11 @@ class _LoginPageState extends State<LoginPage> {
               decoration: InputDecoration(
                 labelText: 'Email',
                 prefixIcon: Icon(Icons.email_outlined),
-                border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.black,fontSize: 15),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.teal),
+                ),
+                border: OutlineInputBorder()
               ),
             ),
             SizedBox(height: 20),
@@ -48,9 +49,13 @@ class _LoginPageState extends State<LoginPage> {
               controller: passwordController,
               obscureText: true,
               decoration: InputDecoration(
+                labelStyle: TextStyle(color: Colors.black,fontSize: 15),
                 labelText: 'Password',
                 prefixIcon: Icon(Icons.lock_outline),
-                border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.teal),
+                  ),
+                  border: OutlineInputBorder()
               ),
             ),
             SizedBox(height: 10),
@@ -60,22 +65,26 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () {
                   // TODO: Implement forgot password
                 },
-                child: Text("Forgot Password?"),
+                child: Text("Forgot Password?",style: TextStyle(color: Colors.black,fontSize: 15)),
               ),
             ),
             SizedBox(height: 10),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
                 onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => DashboardPage()),
-                  );
+                 Get.to(DashboardPage());
+                 Get.snackbar("Log In",colorText: Colors.white, "Login Successful",snackStyle: SnackStyle.FLOATING,snackPosition: SnackPosition.BOTTOM,backgroundColor: Colors.teal);
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12.0),
-                  child: Text("Login", style: TextStyle(fontSize: 16)),
+                  child: Text("Login", style: TextStyle(fontSize: 19,color: Colors.white)),
                 ),
               ),
             ),
@@ -83,10 +92,7 @@ class _LoginPageState extends State<LoginPage> {
             Divider(),
             TextButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => RegisterPage()),
-                );
+                Get.to(RegisterPage());
               },
               child: Text("Don't have an account? Register"),
             ),

@@ -1,3 +1,4 @@
+import 'package:assignment/Pages/login.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -37,12 +38,12 @@ class _ProfilePageState extends State<ProfilePage> {
             // Name
             const Text(
               'Shivam Gour',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold,color: Colors.black),
             ),
             const SizedBox(height: 4),
             const Text(
               'shivamsingh@gmail.com',
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(color: Colors.black45),
             ),
 
             const SizedBox(height: 20),
@@ -66,21 +67,6 @@ class _ProfilePageState extends State<ProfilePage> {
             ProfileTile(title: 'Blood Group', value: 'O+'),
             ProfileTile(title: 'Height', value: '183 cm'),
             ProfileTile(title: 'Weight', value: '80 kg'),
-
-            const SizedBox(height: 30),
-
-            // Logout Button
-            ElevatedButton.icon(
-              icon: const Icon(Icons.logout,color: Colors.white,),
-              label: const Text("Logout",style: TextStyle(color: Colors.white),),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                minimumSize: const Size(double.infinity, 50),
-              ),
-              onPressed: () {
-                // Add logout logic
-              },
-            ),
           ],
         ),
       ),
@@ -104,7 +90,7 @@ class ProfileTile extends StatelessWidget {
       contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 0),
       title: Text(
         title,
-        style: const TextStyle(color: Colors.grey),
+        style: const TextStyle(color: Colors.black45),
       ),
       subtitle: Text(
         value,
