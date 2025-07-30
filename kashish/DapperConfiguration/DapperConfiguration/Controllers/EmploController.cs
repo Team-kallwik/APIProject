@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using DapperConfiguration.Models;
-using DapperConfiguration.Repository;
-
+﻿using DapperConfiguration.Models;
+using DapperConfiguration.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DapperConfiguration.Controllers
 {
@@ -9,46 +8,46 @@ namespace DapperConfiguration.Controllers
     [ApiController]
     public class EmploController : Controller
     {
-        private readonly IEmploRepository _repository;
+        private readonly IEmploService _service;
 
-        public EmploController(IEmploRepository repository)
+        public EmploController(IEmploService service)
         {
-            _repository = repository;
+            _service = service;
         }
 
         [HttpGet("GetAllEmployee")]
-        public async Task<IActionResult> GetAll() =>
-            Ok(await _repository.GetAllAsync());
-
-        [HttpGet("GetEmployeeById,{id}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GetAll()
         {
-            var emp = await _repository.GetByIdAsync(id);
-            return emp == null ? NotFound() : Ok(emp);
+            var result = await _service.GetAllAsync();
+            return Ok(result);
         }
 
-        [HttpPost("CreateEmployee")]
-        public async Task<IActionResult> Create([FromBody] Emplo employee)
+        [HttpGet("GetById/{id}")]
+        public async Task<IActionResult> GetById(int id)
         {
-            await _repository.CreateAsync(employee);
-            return CreatedAtAction(nameof(Get), new { id = employee.Id }, employee);
+            var result = await _service.GetByIdAsync(id);
+            return Ok(result);
         }
 
-        [HttpPut("UpdateEmployee")]
-        public async Task<IActionResult> Update(int id, [FromBody] Emplo employee)
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create([FromBody] Emplo emp)
         {
-            if (id != employee.Id) return BadRequest();
-            await _repository.UpdateAsync(employee);
-            return NoContent();
+            var result = await _service.CreateAsync(emp);
+            return Ok(result);
         }
 
-        [HttpDelete("DeleteEmployee,{id}")]
+        [HttpPut("Update")]
+        public async Task<IActionResult> Update([FromBody] Emplo emp)
+        {
+            var result = await _service.UpdateAsync(emp);
+            return Ok(result);
+        }
+
+        [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _repository.DeleteAsync(id);
-            return NoContent();
+            var result = await _service.DeleteAsync(id);
+            return Ok(result);
         }
     }
-
 }
-
