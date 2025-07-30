@@ -5,15 +5,17 @@ using DapperTokenAPI.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure Serilog to read from appsettings.json
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-
-// Add logging
-builder.Services.AddLogging();
 
 // Configure Swagger
 builder.Services.AddSwaggerGen(c =>
@@ -124,7 +126,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Dapper Token API v1");
-        // Removed RoutePrefix = string.Empty so it works on /swagger/index.html
     });
 }
 
@@ -132,6 +133,33 @@ app.UseHttpsRedirection();
 
 // Add CORS
 app.UseCors("AllowSpecificOrigin");
+
+// Use Serilog for request logging instead of custom middleware
+app.UseSerilogRequestLogging(options =>
+{
+    options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+    options.GetLevel = (httpContext, elapsed, ex) =>
+    {
+        if (ex != null) return Serilog.Events.LogEventLevel.Error;
+        if (httpContext.Response.StatusCode > 499) return Serilog.Events.LogEventLevel.Error;
+        if (httpContext.Response.StatusCode > 399) return Serilog.Events.LogEventLevel.Warning;
+        return Serilog.Events.LogEventLevel.Information;
+    };
+});
+
+// Global exception handling middleware
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next();
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "Unhandled exception occurred for {RequestPath}", context.Request.Path);
+        throw;
+    }
+});
 
 // Add Security Headers
 app.Use(async (context, next) =>
@@ -147,4 +175,18 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+// Log startup using Serilog
+Log.Information("Dapper Token API started successfully");
+
+try
+{
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

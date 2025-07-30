@@ -1,11 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using Microsoft.IdentityModel.Tokens;
-using System.Data;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text.Json;
-using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Dapper_Api_With_Token_Authentication.Model;
 using Dapper_Api_With_Token_Authentication.Services.Interface;
@@ -18,8 +11,13 @@ namespace Dapper_Api_With_Token_Authentication.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeService _service;
+        private readonly ILogger<EmployeeController> _logger;
 
-        public EmployeeController(IEmployeeService service) => _service = service;
+        public EmployeeController(IEmployeeService service, ILogger<EmployeeController> logger)
+        {
+            _service = service;
+            _logger = logger;
+        }
 
         [HttpGet("GetAllEmployee")]
         public async Task<IActionResult> GetAll()
@@ -31,6 +29,7 @@ namespace Dapper_Api_With_Token_Authentication.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error fetching employee list");
                 return StatusCode(500, $"Error fetching employee list: {ex.Message}");
             }
         }
@@ -48,6 +47,7 @@ namespace Dapper_Api_With_Token_Authentication.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error fetching employee by ID: {Id}", id);
                 return StatusCode(500, $"Error fetching employee by ID: {ex.Message}");
             }
         }
@@ -69,17 +69,16 @@ namespace Dapper_Api_With_Token_Authentication.Controllers
                 if (result > 0)
                     return Ok(new { message = "Employee created successfully", emp });
 
-                Console.WriteLine("⚠️ Stored procedure returned 0 rows.");
+                _logger.LogWarning("Employee creation failed.");
                 return BadRequest("Employee creation failed");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("❌ Error: " + ex.Message);
+                _logger.LogError(ex, "Error creating employee {@Employee}", empDto);
                 return StatusCode(500, $"Error creating employee: {ex.Message}");
             }
         }
 
-        [Authorize]
         [HttpPut("UpdateEmployee/{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Emp emp)
         {
@@ -108,10 +107,12 @@ namespace Dapper_Api_With_Token_Authentication.Controllers
                     });
                 }
 
+                _logger.LogWarning("Update failed for employee ID {Id}", id);
                 return BadRequest("Update failed. No rows were affected.");
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error updating employee ID {Id}", id);
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
@@ -125,10 +126,12 @@ namespace Dapper_Api_With_Token_Authentication.Controllers
                 if (result > 0)
                     return Ok("Employee deleted successfully");
 
+                _logger.LogWarning("Delete failed or employee not found for ID {Id}", id);
                 return NotFound("Employee not found or could not be deleted");
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error deleting employee ID {Id}", id);
                 return StatusCode(500, $"Error deleting employee: {ex.Message}");
             }
         }
