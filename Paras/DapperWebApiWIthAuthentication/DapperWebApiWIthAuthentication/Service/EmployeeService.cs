@@ -1,98 +1,134 @@
-﻿using Dapper;
-using DapperWebApiWIthAuthentication.Models;
+﻿using DapperWebApiWIthAuthentication.Models;
 using DapperWebApiWIthAuthentication.Repository;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.OpenApi.Any;
-using System.Linq.Expressions;
+using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace DapperWebApiWIthAuthentication.Service
 {
-    public class EmployeeService :IEmployeeService
+    public class EmployeeService : IEmployeeService
     {
         private readonly IEmployeeRepository _repository;
-        public EmployeeService(IEmployeeRepository repository)
+        private readonly ILogger<EmployeeService> _logger;
+
+        public EmployeeService(IEmployeeRepository repository, ILogger<EmployeeService> logger)
         {
             _repository = repository;
+            _logger = logger;
         }
-        public async Task <IEnumerable<Employee>>GetAllEmployeeAsync()
+
+        public async Task<IEnumerable<Employee>> GetAllEmployeeAsync()
         {
             try
             {
-                var AllEmployee = await _repository.GetAllAsync();
+                var jsonResult = await _repository.GetAllAsync();
 
-                if (AllEmployee==null&& AllEmployee.Any())
+                if (string.IsNullOrWhiteSpace(jsonResult))
                 {
-                    throw new Exception("No Employee Found ");
+                    _logger.LogWarning("No employees found (empty JSON).");
+                    return Enumerable.Empty<Employee>();
                 }
-                return AllEmployee;
+
+                var employees = JsonSerializer.Deserialize<List<Employee>>(jsonResult);
+
+                if (employees == null || !employees.Any())
+                {
+                    _logger.LogWarning("Deserialized list is empty.");
+                    return Enumerable.Empty<Employee>();
+                }
+
+                _logger.LogInformation("Successfully retrieved {Count} employees.", employees.Count);
+                return employees;
+            }
+            catch (JsonException jsonEx)
+            {
+                _logger.LogError(jsonEx, "Failed to deserialize employee JSON.");
+                throw new Exception("Failed to process employee data.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error while fetching data"+ex.Message);
-                throw new Exception("Something went wrong while retrieving  data");
+                _logger.LogError(ex, "Error occurred while retrieving all employees.");
+                throw new Exception("Error retrieving employees.");
             }
         }
-        public async Task<Employee> GetEmployeeByIdAsync(int id)
+
+        public async Task<Employee?> GetEmployeeByIdAsync(int id)
         {
             try
             {
                 var employee = await _repository.GetByIdAsync(id);
+
                 if (employee == null)
                 {
-                    Console.WriteLine(" Employee ID not found.");
+                    _logger.LogWarning("Employee with ID {Id} not found.", id);
                     return null;
                 }
+
+                _logger.LogInformation("Employee with ID {Id} retrieved successfully.", id);
                 return employee;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(" Error getting employee by ID: " + ex.Message);
-                return null; 
+                _logger.LogError(ex, "Error retrieving employee with ID {Id}.", id);
+                throw new Exception("Error retrieving employee.");
             }
         }
+
         public async Task CreateEmployeeAsync(CreateEmployeeDto dto)
         {
             try
             {
                 await _repository.CreateAsync(dto);
-                Console.WriteLine(" Employee created successfully.");
+                _logger.LogInformation("Employee created successfully.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine(" Error while creating employee: " + ex.Message);
+                _logger.LogError(ex, "Error creating employee.");
+                throw new Exception("Failed to create employee.");
             }
         }
-        public  async Task UpdateEmployeeAsync(Employee employee)
+
+        public async Task<bool> UpdateEmployeeAsync(Employee employee)
         {
             try
             {
-                 await _repository.UpdateAsync(employee);
-                Console.WriteLine("Update Employee Successfully ");
+                var updated = await _repository.UpdateAsync(employee);
+
+                if (!updated)
+                {
+                    _logger.LogWarning("Update failed. Employee with ID {Id} not found.", employee.Id);
+                    return false;
+                }
+
+                _logger.LogInformation("Employee with ID {Id} updated successfully.", employee.Id);
+                return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error while updating Employee"+ex.Message);
+                _logger.LogError(ex, "Error updating employee with ID {Id}.", employee.Id);
+                throw new Exception("Failed to update employee.");
             }
         }
-        public  async Task DeleteEmployeeAsync(int id)
+
+        public async Task<bool> DeleteEmployeeAsync(int id)
         {
             try
             {
-                 await _repository.DeleteAsync(id);
-                Console.WriteLine("Delete Employee Successfully");
+                var deleted = await _repository.DeleteAsync(id);
+
+                if (!deleted)
+                {
+                    _logger.LogWarning("Delete failed. Employee with ID {Id} not found.", id);
+                    return false;
+                }
+
+                _logger.LogInformation("Employee with ID {Id} deleted successfully.", id);
+                return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                Console.WriteLine("Error while Deleting Employee"+ex.Message);
+                _logger.LogError(ex, "Error deleting employee with ID {Id}.", id);
+                throw new Exception("Failed to delete employee.");
             }
         }
-
-
-
-
-
-
-
-
     }
 }

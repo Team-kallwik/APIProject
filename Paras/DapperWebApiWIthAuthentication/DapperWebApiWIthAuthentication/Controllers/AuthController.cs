@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace DapperWebApiWIthAuthentication.Controllers
 {
@@ -12,10 +13,12 @@ namespace DapperWebApiWIthAuthentication.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IConfiguration _config;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IConfiguration config)
+        public AuthController(IConfiguration config, ILogger<AuthController> logger)
         {
             _config = config;
+            _logger = logger;
         }
 
         [HttpPost("login")]
@@ -23,17 +26,21 @@ namespace DapperWebApiWIthAuthentication.Controllers
         {
             try
             {
-               
+                _logger.LogInformation("Login attempt for user: {Username}", loginEmployee.Username);
+
                 if (loginEmployee.Username == "admin" && loginEmployee.Password == "123")
                 {
                     var token = GenerateToken(loginEmployee.Username);
+                    _logger.LogInformation("JWT generated successfully for user: {Username}", loginEmployee.Username);
                     return Ok(new { token });
                 }
 
+                _logger.LogWarning("Invalid credentials for user: {Username}", loginEmployee.Username);
                 return Unauthorized("Invalid credentials");
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred during login for user: {Username}", loginEmployee.Username);
                 return StatusCode(500, "Internal server error: {ex.Message}");
             }
         }
@@ -62,7 +69,8 @@ namespace DapperWebApiWIthAuthentication.Controllers
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error generating JWT token: {ex.Message}");
+                _logger.LogError(ex, "Error generating JWT token for user: {Username}", username);
+                throw new Exception("Error generating JWT token: {ex.Message}");
             }
         }
     }
