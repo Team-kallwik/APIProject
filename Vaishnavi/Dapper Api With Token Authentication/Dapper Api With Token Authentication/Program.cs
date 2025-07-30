@@ -20,6 +20,11 @@ builder.Host.UseSerilog(); // Attach Serilog
 
 // Add services
 builder.Services.AddControllers();
+
+//Generic Repository Registration
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+//Employee-specific Repository and Service Registration
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
@@ -80,7 +85,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseSerilogRequestLogging(); //Important for request logging
+app.UseSerilogRequestLogging(); // Important for request logging
 
 app.UseAuthentication();
 app.UseAuthorization();

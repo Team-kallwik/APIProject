@@ -1,0 +1,78 @@
+[2025-07-29 17:15:27 ERR] GenericRepo: Error updating entity using SP UpdateEmployeeFromJson {"SourceContext":"Dapper_Api_With_Token_Authentication.Repository.Imp.GenericRepository","ActionId":"04e5a3c1-5511-40c6-9c6c-ca577952a496","ActionName":"Dapper_Api_With_Token_Authentication.Controllers.EmployeeController.Update (Dapper Api With Token Authentication)","RequestId":"0HNEEIKHUK157:0000000F","RequestPath":"/api/Employee/UpdateEmployee/1039","ConnectionId":"0HNEEIKHUK157"}
+Microsoft.Data.SqlClient.SqlException (0x80131904): Procedure or function 'UpdateEmployeeFromJson' expects parameter '@Result', which was not supplied.
+   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 662
+   at Dapper_Api_With_Token_Authentication.Repository.Imp.GenericRepository`1.UpdateAsync(String spName, Object parameters) in C:\Users\Vaishnavi Bajpai\source\repos\APIProject\Vaishnavi\Dapper Api With Token Authentication\Dapper Api With Token Authentication\Repository\Implementation\GenericRepository.cs:line 74
+ClientConnectionId:cd7c1cfa-970b-4ed5-8eeb-71b35adf0268
+Error Number:201,State:4,Class:16
+[2025-07-29 17:15:27 ERR] Error updating employee ID 1039 {"SourceContext":"Dapper_Api_With_Token_Authentication.Controllers.EmployeeController","ActionId":"04e5a3c1-5511-40c6-9c6c-ca577952a496","ActionName":"Dapper_Api_With_Token_Authentication.Controllers.EmployeeController.Update (Dapper Api With Token Authentication)","RequestId":"0HNEEIKHUK157:0000000F","RequestPath":"/api/Employee/UpdateEmployee/1039","ConnectionId":"0HNEEIKHUK157"}
+Microsoft.Data.SqlClient.SqlException (0x80131904): Procedure or function 'UpdateEmployeeFromJson' expects parameter '@Result', which was not supplied.
+   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 662
+   at Dapper_Api_With_Token_Authentication.Repository.Imp.GenericRepository`1.UpdateAsync(String spName, Object parameters) in C:\Users\Vaishnavi Bajpai\source\repos\APIProject\Vaishnavi\Dapper Api With Token Authentication\Dapper Api With Token Authentication\Repository\Implementation\GenericRepository.cs:line 74
+   at Dapper_Api_With_Token_Authentication.Services.Implementation.EmployeeService.UpdateAsync(Emp emp) in C:\Users\Vaishnavi Bajpai\source\repos\APIProject\Vaishnavi\Dapper Api With Token Authentication\Dapper Api With Token Authentication\Services\Implementation\EmployeeService.cs:line 38
+   at Dapper_Api_With_Token_Authentication.Controllers.EmployeeController.Update(Int32 id, Emp emp) in C:\Users\Vaishnavi Bajpai\source\repos\APIProject\Vaishnavi\Dapper Api With Token Authentication\Dapper Api With Token Authentication\Controllers\EmployeeController.cs:line 100
+ClientConnectionId:cd7c1cfa-970b-4ed5-8eeb-71b35adf0268
+Error Number:201,State:4,Class:16
+[2025-07-29 17:15:27 ERR] HTTP PUT /api/Employee/UpdateEmployee/1039 responded 500 in 189.7026 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNEEIKHUK157:0000000F","ConnectionId":"0HNEEIKHUK157"}
+[2025-07-29 18:04:02 ERR] GenericRepo: Error adding entity using SP AddEmployeeFromJson {"SourceContext":"Dapper_Api_With_Token_Authentication.Repository.Imp.GenericRepository","ActionId":"7e0be528-eb92-4b9e-a8cb-386335712525","ActionName":"Dapper_Api_With_Token_Authentication.Controllers.EmployeeController.Create (Dapper Api With Token Authentication)","RequestId":"0HNEEJG7MQ0IM:0000000F","RequestPath":"/api/Employee/CreateEmployee","ConnectionId":"0HNEEJG7MQ0IM"}
+Microsoft.Data.SqlClient.SqlException (0x80131904): Procedure or function 'AddEmployeeFromJson' expects parameter '@Result', which was not supplied.
+   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 662
+   at Dapper_Api_With_Token_Authentication.Repository.Imp.GenericRepository`1.AddAsync(String spName, Object parameters) in C:\Users\Vaishnavi Bajpai\source\repos\APIProject\Vaishnavi\Dapper Api With Token Authentication\Dapper Api With Token Authentication\Repository\Implementation\GenericRepository.cs:line 59
+ClientConnectionId:7b7443ab-9ea4-4747-8e97-78213da45149
+Error Number:201,State:4,Class:16
+[2025-07-29 18:04:02 ERR] Error creating employee {"Id":0,"Name":"Vikas","Department":"IT","Salary":90,"$type":"Emp"} {"SourceContext":"Dapper_Api_With_Token_Authentication.Controllers.EmployeeController","ActionId":"7e0be528-eb92-4b9e-a8cb-386335712525","ActionName":"Dapper_Api_With_Token_Authentication.Controllers.EmployeeController.Create (Dapper Api With Token Authentication)","RequestId":"0HNEEJG7MQ0IM:0000000F","RequestPath":"/api/Employee/CreateEmployee","ConnectionId":"0HNEEJG7MQ0IM"}
+Microsoft.Data.SqlClient.SqlException (0x80131904): Procedure or function 'AddEmployeeFromJson' expects parameter '@Result', which was not supplied.
+   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 662
+   at Dapper_Api_With_Token_Authentication.Repository.Imp.GenericRepository`1.AddAsync(String spName, Object parameters) in C:\Users\Vaishnavi Bajpai\source\repos\APIProject\Vaishnavi\Dapper Api With Token Authentication\Dapper Api With Token Authentication\Repository\Implementation\GenericRepository.cs:line 59
+   at Dapper_Api_With_Token_Authentication.Services.Implementation.EmployeeService.AddAsync(Emp emp) in C:\Users\Vaishnavi Bajpai\source\repos\APIProject\Vaishnavi\Dapper Api With Token Authentication\Dapper Api With Token Authentication\Services\Implementation\EmployeeService.cs:line 32
+   at Dapper_Api_With_Token_Authentication.Controllers.EmployeeController.Create(Emp empDto) in C:\Users\Vaishnavi Bajpai\source\repos\APIProject\Vaishnavi\Dapper Api With Token Authentication\Dapper Api With Token Authentication\Controllers\EmployeeController.cs:line 67
+ClientConnectionId:7b7443ab-9ea4-4747-8e97-78213da45149
+Error Number:201,State:4,Class:16
+[2025-07-29 18:04:02 ERR] HTTP POST /api/Employee/CreateEmployee responded 500 in 234.6999 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNEEJG7MQ0IM:0000000F","ConnectionId":"0HNEEJG7MQ0IM"}
