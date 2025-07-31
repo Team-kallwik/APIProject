@@ -13,7 +13,6 @@ namespace DapperAPI.Data
             _config = config;
         }
 
-        public IDbConnection CreateConnection() =>
-            new SqlConnection(_config.GetConnectionString("dbcs"));
+        public IDbConnection CreateConnection() => new SqlConnection(_config.GetConnectionString("dbcs"));
     }
 }
