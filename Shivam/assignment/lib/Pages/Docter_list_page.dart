@@ -8,19 +8,19 @@ class DoctorsListPage extends StatefulWidget {
 class _DoctorsListPageState extends State<DoctorsListPage> {
   final List<Map<String, dynamic>> doctors = [
     {
-      'name': 'Dr. Anjali Mehra',
+      'name': 'Dr. Kashish Rithe',
       'specialty': 'Cardiologist',
       'rating': 4.8,
       'image': 'https://via.placeholder.com/150',
     },
     {
-      'name': 'Dr. Rohit Gupta',
-      'specialty': 'Dermatologist',
-      'rating': 4.6,
+      'name': 'Dr. Yaju Patel',
+      'specialty': 'psychiatrist ',
+      'rating': 5.0,
       'image': 'https://via.placeholder.com/150',
     },
     {
-      'name': 'Dr. Sneha Kapoor',
+      'name': 'Dr. Abhishek Raghuvanshi',
       'specialty': 'Pediatrician',
       'rating': 4.9,
       'image': 'https://via.placeholder.com/150',

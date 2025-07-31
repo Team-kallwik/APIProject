@@ -1,6 +1,11 @@
-﻿using DapperWebApiWIthAuthentication.Models;
+﻿using Dapper;
+using DapperWebApiWIthAuthentication.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using System.Data;
+using System.Data.SqlClient;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -11,30 +16,94 @@ namespace DapperWebApiWIthAuthentication.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
+        private readonly DapperContext _context;
+        private readonly ILogger<AuthController> _logger;
         private readonly IConfiguration _config;
 
-        public AuthController(IConfiguration config)
+
+        public AuthController(DapperContext context, ILogger<AuthController> logger, IConfiguration config)
         {
             _config = config;
+            _context = context;
+            _logger = logger;
         }
-
-        [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginEmployee loginEmployee)
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterEmployee user)
         {
+            if (user == null || string.IsNullOrWhiteSpace(user.Password))
+                return BadRequest(" Invalid input.");
+
+            // Encrypt the plain password
+            var encryptedPassword = EncryptionHelper.Encrypt(user.Password);
+
+            // Build JSON from object
+            var jsonPayload = JsonConvert.SerializeObject(new[]
+            {
+        new
+        {
+            Email = user.Email,
+            UserName = user.UserName,
+            PasswordEncrpted = encryptedPassword
+        }
+    });
+
             try
             {
-               
-                if (loginEmployee.Username == "admin" && loginEmployee.Password == "123")
-                {
-                    var token = GenerateToken(loginEmployee.Username);
-                    return Ok(new { token });
-                }
+                using var connection = _context.CreateConnection();
+                var parameters = new DynamicParameters();
+                parameters.Add("@JsonData", jsonPayload);
 
-                return Unauthorized("Invalid credentials");
+                await connection.ExecuteAsync("SaveRegisterEmployee", parameters, commandType: CommandType.StoredProcedure);
+
+                return Ok(" Registered Successfully ");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Internal server error: {ex.Message}");
+                return StatusCode(500, $" Error: {ex.Message}");
+            }
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginEmployeeDto loginEmployee)
+        {
+            try
+            {
+                _logger.LogInformation("Login attempt for user: {Username}", loginEmployee.Username);
+
+                using var connection = _context.CreateConnection();
+
+                // Step 1: Fetch user data using stored procedure
+                var parameters = new { Username = loginEmployee.Username };
+
+                var user = await connection.QueryFirstOrDefaultAsync<RegisterEmployee>(
+                    "LoginEmployee",
+                    parameters,
+                    commandType: CommandType.StoredProcedure);
+
+                if (user == null)
+                {
+                    _logger.LogWarning("User not found: {Username}", loginEmployee.Username);
+                    return Unauthorized("Invalid username or password");
+                }
+
+                // Step 2: Decrypt stored password
+                var decryptedPassword = EncryptionHelper.Decrypt(user.Password);
+
+                // Step 3: Compare with provided password
+                if (decryptedPassword != loginEmployee.Password)
+                {
+                    _logger.LogWarning("Incorrect password for user: {Username}", loginEmployee.Username);
+                    return Unauthorized("Invalid username or password");
+                }
+
+                // Step 4: Generate JWT Token
+                var token = GenerateToken(user.UserName);
+                return Ok(new { token });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred during login for user: {Username}", loginEmployee.Username);
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -62,7 +131,8 @@ namespace DapperWebApiWIthAuthentication.Controllers
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error generating JWT token: {ex.Message}");
+                _logger.LogError(ex, "Error generating JWT token for user: {Username}", username);
+                throw new Exception("Error generating JWT token: {ex.Message}");
             }
         }
     }

@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Text;
 using Dapper;
 using Dapper_Api_With_Token_Authentication.Model;
+using Dapper_Api_With_Token_Authentication.Helpers;
 
 namespace Dapper_Api_With_Token_Authentication.Controllers
 {
@@ -17,11 +18,13 @@ namespace Dapper_Api_With_Token_Authentication.Controllers
     {
         private readonly IConfiguration _config;
         private readonly ILogger<AuthController> _logger;
+        private readonly AesEncryptionHelper _aesHelper;
 
-        public AuthController(IConfiguration config, ILogger<AuthController> logger)
+        public AuthController(IConfiguration config, ILogger<AuthController> logger, AesEncryptionHelper aesHelper)
         {
             _config = config;
             _logger = logger;
+            _aesHelper = aesHelper;
         }
 
         [HttpPost("register")]
@@ -31,6 +34,9 @@ namespace Dapper_Api_With_Token_Authentication.Controllers
 
             try
             {
+                // Encrypt password before saving
+                newUser.Password = _aesHelper.Encrypt(newUser.Password);
+
                 var json = JsonSerializer.Serialize(new[] { newUser });
 
                 using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
@@ -61,19 +67,36 @@ namespace Dapper_Api_With_Token_Authentication.Controllers
 
             try
             {
-                var json = JsonSerializer.Serialize(new[] { login });
+                string encryptedPassword = _aesHelper.Encrypt(login.Password);
+
+                // First try with encrypted password
+                var jsonEncrypted = JsonSerializer.Serialize(new[] { new { login.Username, Password = encryptedPassword } });
 
                 using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
-
                 var result = connection.QueryFirstOrDefault<string>(
                     "LoginUserFromJson",
-                    new { json },
+                    new { json = jsonEncrypted },
                     commandType: CommandType.StoredProcedure
                 );
 
                 if (result == "Success")
                 {
-                    _logger.LogInformation("Login successful for Username: {Username}", login.Username);
+                    _logger.LogInformation("Login successful (encrypted) for Username: {Username}", login.Username);
+                    var token = GenerateToken(login.Username);
+                    return Ok(new { token });
+                }
+
+                //Try with plain password (old users)
+                var jsonPlain = JsonSerializer.Serialize(new[] { login });
+                result = connection.QueryFirstOrDefault<string>(
+                    "LoginUserFromJson",
+                    new { json = jsonPlain },
+                    commandType: CommandType.StoredProcedure
+                );
+
+                if (result == "Success")
+                {
+                    _logger.LogInformation("Login successful (plain) for Username: {Username}", login.Username);
                     var token = GenerateToken(login.Username);
                     return Ok(new { token });
                 }
@@ -87,6 +110,7 @@ namespace Dapper_Api_With_Token_Authentication.Controllers
                 return StatusCode(500, new { message = "An error occurred while logging in", error = ex.Message });
             }
         }
+
 
         private string GenerateToken(string username)
         {
