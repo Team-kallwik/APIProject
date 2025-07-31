@@ -1,18 +1,16 @@
-using DapperConfiguration.Repository;
-using DapperConfiguration.Services; // <-- Add this line
+using Dapper_Api_Without_Token_Authentication.Repository;
+using Dapper_Api_Without_Token_Authentication.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
-// Swagger configuration
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-// Register repository and service layers
-builder.Services.AddScoped<IEmploRepository, EmploRepository>();
-builder.Services.AddScoped<IEmploService, EmploService>(); // <-- Add this line
 
 var app = builder.Build();
 
