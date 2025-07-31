@@ -10,7 +10,7 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Serilog from appsettings.json
+//Configure Serilog from appsettings.json
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
@@ -18,20 +18,20 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog(); // Attach Serilog
 
-// Add controllers
+//Add controllers
 builder.Services.AddControllers();
 
-// Register AES Encryption Helper (Singleton)
+//Register AES Encryption Helper (Singleton)
 builder.Services.AddSingleton<AesEncryptionHelper>();
 
-// Generic Repository Registration
+//Generic Repository Registration
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
-// Employee-specific Repository and Service Registration
+//Employee-specific Repository and Service Registration
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
-// JWT Authentication
+//JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -48,7 +48,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// Swagger with JWT support
+//Swagger with JWT support
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Dapper Api With Token Authentication", Version = "v1" });
@@ -80,7 +80,7 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Middleware
+//Middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -90,7 +90,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseSerilogRequestLogging(); // Logs HTTP requests
 
+//Add Authentication and Global Exception Middleware
 app.UseAuthentication();
+app.UseMiddleware<ExceptionMiddleware>(); //Global Exception Middleware Added
 app.UseAuthorization();
 
 app.MapControllers();

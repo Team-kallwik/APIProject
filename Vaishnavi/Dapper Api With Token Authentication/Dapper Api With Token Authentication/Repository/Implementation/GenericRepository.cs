@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Dapper_Api_With_Token_Authentication.Repository.Interface;
+using Dapper_Api_With_Token_Authentication.Exceptions; 
 using Microsoft.Data.SqlClient;
 using System.Data;
 
@@ -28,9 +29,14 @@ namespace Dapper_Api_With_Token_Authentication.Repository.Imp
                 using var db = Connection;
                 return await db.ExecuteScalarAsync<string>(spName, commandType: CommandType.StoredProcedure);
             }
+            catch (SqlException ex)
+            {
+                _logger.LogError(ex, "GenericRepo: SQL Error executing SP {SpName}", spName);
+                throw new DatabaseException($"Database error while executing {spName}", ex);
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "GenericRepo: Error executing SP {SpName}", spName);
+                _logger.LogError(ex, "GenericRepo: Unexpected error in SP {SpName}", spName);
                 throw;
             }
         }
@@ -44,13 +50,18 @@ namespace Dapper_Api_With_Token_Authentication.Repository.Imp
 
                 return await db.QueryFirstOrDefaultAsync<T>(
                     spName,
-                    jsonParameters,  
+                    jsonParameters,
                     commandType: CommandType.StoredProcedure
                 );
             }
+            catch (SqlException ex)
+            {
+                _logger.LogError(ex, "GenericRepo: SQL Error executing SP {SpName}", spName);
+                throw new DatabaseException($"Database error while executing {spName}", ex);
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "GenericRepo: Error executing SP {SpName}", spName);
+                _logger.LogError(ex, "GenericRepo: Unexpected error in SP {SpName}", spName);
                 throw;
             }
         }
@@ -68,9 +79,14 @@ namespace Dapper_Api_With_Token_Authentication.Repository.Imp
                 await db.ExecuteAsync(spName, dynamicParams, commandType: CommandType.StoredProcedure);
                 return dynamicParams.Get<int>("Result");
             }
+            catch (SqlException ex)
+            {
+                _logger.LogError(ex, "GenericRepo: SQL Error adding entity using SP {SpName}", spName);
+                throw new DatabaseException($"Database error while adding entity using {spName}", ex);
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "GenericRepo: Error adding entity using SP {SpName}", spName);
+                _logger.LogError(ex, "GenericRepo: Unexpected error adding entity using SP {SpName}", spName);
                 throw;
             }
         }
@@ -88,9 +104,14 @@ namespace Dapper_Api_With_Token_Authentication.Repository.Imp
                 await db.ExecuteAsync(spName, dynamicParams, commandType: CommandType.StoredProcedure);
                 return dynamicParams.Get<int>("Result");
             }
+            catch (SqlException ex)
+            {
+                _logger.LogError(ex, "GenericRepo: SQL Error updating entity using SP {SpName}", spName);
+                throw new DatabaseException($"Database error while updating entity using {spName}", ex);
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "GenericRepo: Error updating entity using SP {SpName}", spName);
+                _logger.LogError(ex, "GenericRepo: Unexpected error updating entity using SP {SpName}", spName);
                 throw;
             }
         }
@@ -103,9 +124,14 @@ namespace Dapper_Api_With_Token_Authentication.Repository.Imp
                 using var db = Connection;
                 return await db.ExecuteAsync(spName, parameters, commandType: CommandType.StoredProcedure);
             }
+            catch (SqlException ex)
+            {
+                _logger.LogError(ex, "GenericRepo: SQL Error deleting entity using SP {SpName}", spName);
+                throw new DatabaseException($"Database error while deleting entity using {spName}", ex);
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "GenericRepo: Error deleting entity using SP {SpName}", spName);
+                _logger.LogError(ex, "GenericRepo: Unexpected error deleting entity using SP {SpName}", spName);
                 throw;
             }
         }
