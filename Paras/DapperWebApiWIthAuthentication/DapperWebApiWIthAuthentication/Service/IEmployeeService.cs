@@ -2,12 +2,15 @@
 
 namespace DapperWebApiWIthAuthentication.Service
 {
+    using DapperWebApiWIthAuthentication.Models;
+
     public interface IEmployeeService
     {
         Task<IEnumerable<Employee>> GetAllEmployeeAsync();
-        Task<Employee> GetEmployeeByIdAsync(int id);
+        Task<Employee?> GetEmployeeByIdAsync(int id);
         Task CreateEmployeeAsync(CreateEmployeeDto dto);
-        Task UpdateEmployeeAsync(Employee employee);
-        Task DeleteEmployeeAsync(int id);
+        Task<bool> UpdateEmployeeAsync(Employee employee);
+        Task<bool> DeleteEmployeeAsync(int id);
     }
+
 }

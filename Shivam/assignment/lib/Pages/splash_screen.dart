@@ -1,17 +1,14 @@
 import 'package:assignment/Pages/login.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Future.delayed(Duration(seconds: 4), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => LoginPage()),
-      );
+      Get.to(LoginPage());
     });
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(

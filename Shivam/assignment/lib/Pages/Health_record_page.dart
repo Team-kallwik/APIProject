@@ -54,6 +54,9 @@ class _HealthRecordsPageState extends State<HealthRecordsPage>
       appBar: AppBar(
         title: Text("Health Records"),
         bottom: TabBar(
+          indicatorColor: Colors.teal,
+          dividerColor: Colors.black,
+          labelColor: Colors.teal,
           controller: _tabController,
           tabs: [
             Tab(text: 'Reports'),
