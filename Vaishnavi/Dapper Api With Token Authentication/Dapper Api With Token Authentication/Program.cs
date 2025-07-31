@@ -1,6 +1,6 @@
+using Dapper_Api_With_Token_Authentication.Helpers;
 using Dapper_Api_With_Token_Authentication.Repository.Imp;
 using Dapper_Api_With_Token_Authentication.Repository.Interface;
-using Dapper_Api_With_Token_Authentication.Services.Implementation;
 using Dapper_Api_With_Token_Authentication.Services.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -13,18 +13,21 @@ var builder = WebApplication.CreateBuilder(args);
 // Configure Serilog from appsettings.json
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
-    .Enrich.FromLogContext() // Adds request-specific details like trace id
+    .Enrich.FromLogContext()
     .CreateLogger();
 
 builder.Host.UseSerilog(); // Attach Serilog
 
-// Add services
+// Add controllers
 builder.Services.AddControllers();
 
-//Generic Repository Registration
+// Register AES Encryption Helper (Singleton)
+builder.Services.AddSingleton<AesEncryptionHelper>();
+
+// Generic Repository Registration
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
-//Employee-specific Repository and Service Registration
+// Employee-specific Repository and Service Registration
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
@@ -45,7 +48,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// Swagger with JWT
+// Swagger with JWT support
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Dapper Api With Token Authentication", Version = "v1" });
@@ -85,7 +88,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseSerilogRequestLogging(); // Important for request logging
+app.UseSerilogRequestLogging(); // Logs HTTP requests
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -26,7 +26,7 @@ namespace Dapper_Api_With_Token_Authentication.Repository.Imp
             {
                 _logger.LogInformation("GenericRepo: Executing SP {SpName} (JSON)", spName);
                 using var db = Connection;
-                return await db.ExecuteScalarAsync<string>(spName, commandType: CommandType.StoredProcedure); // JSON string directly returned
+                return await db.ExecuteScalarAsync<string>(spName, commandType: CommandType.StoredProcedure);
             }
             catch (Exception ex)
             {
