@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace DapperAPI.Repositories
 {
-    public class CustomerRepository : IGenericRepository<Customer> 
+    public class CustomerRepository : IGenericRepository<Customer>
     {
         private readonly IDbConnection Connection;
         private readonly ILogger<CustomerRepository> _logger;
@@ -47,20 +47,25 @@ namespace DapperAPI.Repositories
                 commandType: CommandType.StoredProcedure
             );
 
-                return json is null ? null : JsonSerializer.Deserialize<Customer>(json);
-            
-            
+
+            return json is null ? null : JsonSerializer.Deserialize<Customer>(json);
+
+
         }
 
         public async Task<int> AddAsync(Customer customer)
         {
-            
-                var json = JsonSerializer.Serialize(new[] { customer });
-                return await Connection.ExecuteAsync(
-                "AddCustomerFromJson",
-                new { Json = json },
-                commandType: CommandType.StoredProcedure);
-            
+
+            var json = JsonSerializer.Serialize(new[] { customer });
+
+            if (string.IsNullOrEmpty(json))
+                throw new InvalidDetailsException();
+
+            return await Connection.ExecuteAsync(
+            "AddCustomerFromJson",
+            new { Json = json },
+            commandType: CommandType.StoredProcedure);
+
         }
 
         public async Task<int> UpdateAsync(Customer customer)
@@ -69,7 +74,7 @@ namespace DapperAPI.Repositories
                 throw new InvalidDetailsException();
 
             var json = JsonSerializer.Serialize(new[] { customer });
-            var UpdateData =  await Connection.ExecuteAsync
+            var UpdateData = await Connection.ExecuteAsync
             (
                 "UpdateCustomerFromJson",
                 new { Json = json },
@@ -96,7 +101,7 @@ namespace DapperAPI.Repositories
 
             return DeleteData;
         }
-        
+
     }
 
 }

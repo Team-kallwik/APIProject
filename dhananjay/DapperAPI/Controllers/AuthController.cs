@@ -27,13 +27,6 @@ namespace DapperAPI.Controllers
             try
             {
                 var result = await _auth.RegisterAsync(dto);
-
-                if (result == "User already exists.")
-                    return Conflict(result);
-
-                if (result == "Database error occurred." || result == "An unexpected error occurred.")
-                    return StatusCode(500, result);
-
                 return Ok(result);
             }
             catch(ResourceConflictException ex)
@@ -43,6 +36,7 @@ namespace DapperAPI.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error during user registration");
                 return StatusCode(500, "Internal server error during registration.");
             }
         }
@@ -59,11 +53,17 @@ namespace DapperAPI.Controllers
 
                 return Ok(result);
             }
+            catch(InvalidCredentialsException ex)
+            {
+                _logger.LogError(ex, "Invalid credentials provided during login.");
+                return Unauthorized("Invalid credentials.");
+            }
             catch (Exception ex)
             {
                 Console.Error.WriteLine($"[Controller Error - Login] {ex.Message}");
                 return StatusCode(500, "Internal server error during login.");
             }
+
         }
     }
 }

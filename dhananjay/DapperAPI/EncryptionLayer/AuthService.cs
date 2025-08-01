@@ -28,44 +28,34 @@ namespace DapperAPI.Services
 
         public async Task<string> RegisterAsync(UserDto request)
         {
-            try
-            {
-                using var conn = _context.CreateConnection();
+            using var conn = _context.CreateConnection();
 
-                var existingUser = await conn.QueryFirstOrDefaultAsync<User>(
-                    "GetUserByEmail",
-                    new { Email = request.Email },
-                    commandType: CommandType.StoredProcedure);
+            var existingUser = await conn.QueryFirstOrDefaultAsync<User>(
+                "GetUserByEmail",
+                new { Email = request.Email },
+                commandType: CommandType.StoredProcedure);
 
-                if (existingUser != null)
-                    throw new ResourceConflictException();
+            if (existingUser != null)
+                throw new ResourceConflictException();
 
-                CreatePasswordHash(request.Password, out byte[] hash, out byte[] salt);
+            CreatePasswordHash(request.Password, out byte[] hash, out byte[] salt);
 
-                await conn.ExecuteAsync(
-                    "AddUser",
-                    new
-                    {
-                        Email = request.Email,
-                        PasswordHash = hash,
-                        PasswordSalt = salt
-                    },
-                    commandType: CommandType.StoredProcedure);
+            await conn.ExecuteAsync(
+                "AddUser",
+                new
+                {
+                    Email = request.Email,
+                    PasswordHash = hash,
+                    PasswordSalt = salt
+                },
+                commandType: CommandType.StoredProcedure);
 
-                return CreateToken(request.Email);
-            }
-            catch (Exception ex)
-            {
-                
-                return $"[Error]: {ex.Message}";
-                
-            }
+            return CreateToken(request.Email);
         }
 
         public async Task<string> LoginAsync(UserDto request)
         {
-            try
-            {
+            
                 using var conn = _context.CreateConnection();
 
 
@@ -75,14 +65,10 @@ namespace DapperAPI.Services
                     commandType: CommandType.StoredProcedure);
 
                 if (user == null || !VerifyPassword(request.Password, user.PasswordHash, user.PasswordSalt))
-                    return "Invalid credentials.";
+                    throw new InvalidCredentialsException ();
 
                 return CreateToken(user.Email);
-            }
-            catch (Exception ex)
-            {
-                return $"[Error]: {ex.Message}";
-            }
+            
         }
 
         private string CreateToken(string email)

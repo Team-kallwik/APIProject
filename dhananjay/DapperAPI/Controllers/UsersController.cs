@@ -10,6 +10,7 @@ using System.Data;
 
 namespace DapperAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class CustomersController : ControllerBase
@@ -51,8 +52,6 @@ namespace DapperAPI.Controllers
             try
             {
                 var customer = await _repository.GetByIdAsync(id);
-                if (customer == null)
-                    return NotFound("Customer not found.");
                 return Ok(customer);
             }
             catch (NotFoundException ex)
@@ -86,7 +85,12 @@ namespace DapperAPI.Controllers
                     ? Ok("Customer added successfully.")
                     : BadRequest("Failed to add customer.");
             }
-            catch(NotFoundException ex)
+            catch (InvalidDetailsException ex)
+            {
+                _logger.LogError(ex, "Invalid customer details provided for addition.");
+                return BadRequest("Invalid customer details provided.");
+            }
+            catch (NotFoundException ex)
             {
                 _logger.LogError(ex, "Table not found during customer addition.");
                 return NotFound("Table not found.");
