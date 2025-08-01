@@ -19,49 +19,56 @@ namespace DapperWebApiWIthAuthentication.Controllers
         private readonly DapperContext _context;
         private readonly ILogger<AuthController> _logger;
         private readonly IConfiguration _config;
+        private readonly EncryptionHelper _encryptionHelper;
 
 
-        public AuthController(DapperContext context, ILogger<AuthController> logger, IConfiguration config)
+        public AuthController(DapperContext context, ILogger<AuthController> logger, IConfiguration config, EncryptionHelper encryptionHelper)
         {
             _config = config;
             _context = context;
             _logger = logger;
+            _encryptionHelper = encryptionHelper;
         }
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterEmployee user)
         {
             if (user == null || string.IsNullOrWhiteSpace(user.Password))
-                return BadRequest(" Invalid input.");
-
-            // Encrypt the plain password
-            var encryptedPassword = EncryptionHelper.Encrypt(user.Password);
-
-            // Build JSON from object
-            var jsonPayload = JsonConvert.SerializeObject(new[]
             {
-        new
-        {
-            Email = user.Email,
-            UserName = user.UserName,
-            PasswordEncrpted = encryptedPassword
-        }
-    });
+                _logger.LogWarning("Invalid registration input received.");
+                return BadRequest("Invalid input.");
+            }
 
             try
             {
+                _logger.LogInformation("Encrypting password for user: {UserName}", user.UserName);
+                var encryptedPassword = _encryptionHelper.Encrypt(user.Password);
+
+                var jsonPayload = JsonConvert.SerializeObject(new[]
+                {
+            new
+            {
+                Email = user.Email,
+                UserName = user.UserName,
+                PasswordEncrpted = encryptedPassword
+            }
+        });
+
                 using var connection = _context.CreateConnection();
                 var parameters = new DynamicParameters();
                 parameters.Add("@JsonData", jsonPayload);
 
                 await connection.ExecuteAsync("SaveRegisterEmployee", parameters, commandType: CommandType.StoredProcedure);
 
-                return Ok(" Registered Successfully ");
+                _logger.LogInformation("User registered successfully: {UserName}", user.UserName);
+                return Ok("Registered Successfully");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $" Error: {ex.Message}");
+                _logger.LogError(ex, "Error occurred while registering user: {UserName}", user.UserName);
+                return StatusCode(500, $"Error: {ex.Message}");
             }
         }
+
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginEmployeeDto loginEmployee)
@@ -72,7 +79,6 @@ namespace DapperWebApiWIthAuthentication.Controllers
 
                 using var connection = _context.CreateConnection();
 
-                // Step 1: Fetch user data using stored procedure
                 var parameters = new { Username = loginEmployee.Username };
 
                 var user = await connection.QueryFirstOrDefaultAsync<RegisterEmployee>(
@@ -86,17 +92,14 @@ namespace DapperWebApiWIthAuthentication.Controllers
                     return Unauthorized("Invalid username or password");
                 }
 
-                // Step 2: Decrypt stored password
-                var decryptedPassword = EncryptionHelper.Decrypt(user.Password);
+                var decryptedPassword = _encryptionHelper.Decrypt(user.Password);
 
-                // Step 3: Compare with provided password
                 if (decryptedPassword != loginEmployee.Password)
                 {
                     _logger.LogWarning("Incorrect password for user: {Username}", loginEmployee.Username);
                     return Unauthorized("Invalid username or password");
                 }
 
-                // Step 4: Generate JWT Token
                 var token = GenerateToken(user.UserName);
                 return Ok(new { token });
             }

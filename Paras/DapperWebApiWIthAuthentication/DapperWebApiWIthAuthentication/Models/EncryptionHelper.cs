@@ -1,20 +1,31 @@
-﻿using System.Security.Cryptography;
+﻿using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace DapperWebApiWIthAuthentication.Models
 {
-    public static class EncryptionHelper
+    public  class EncryptionHelper
     {
-        private static readonly string Key = "qwertyuiopasdfgh"; 
+        private readonly string _Key;
+        public EncryptionHelper(IConfiguration configuration)
+        {
+            _Key = configuration["EncryptionSettings:Key"];
 
-        public static string Encrypt(string plainText)
+            if (string.IsNullOrEmpty(_Key) || _Key.Length != 16)
+            {
+                throw new Exception("Encryption key must be 16 characters long.");
+            }
+        }
+       
+
+        public  string Encrypt(string plainText)
         {
             byte[] iv = new byte[16];
             byte[] array;
 
             using (var aes = Aes.Create())
             {
-                aes.Key = Encoding.UTF8.GetBytes(Key);
+                aes.Key = Encoding.UTF8.GetBytes(_Key);
                 aes.IV = iv;
 
                 var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
@@ -31,13 +42,13 @@ namespace DapperWebApiWIthAuthentication.Models
             return Convert.ToBase64String(array);
         }
 
-        public static string Decrypt(string cipherText)
+        public  string Decrypt(string cipherText)
         {
             byte[] iv = new byte[16];
             byte[] buffer = Convert.FromBase64String(cipherText);
 
             using var aes = Aes.Create();
-            aes.Key = Encoding.UTF8.GetBytes(Key);
+            aes.Key = Encoding.UTF8.GetBytes(_Key);
             aes.IV = iv;
 
             var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);

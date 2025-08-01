@@ -1,4 +1,6 @@
 ﻿using DapperAPI.DTOs;
+using DapperAPI.Exceptions;
+using DapperAPI.Model;
 using DapperAPI.Repositories;
 using DapperAPI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +13,9 @@ namespace DapperAPI.Controllers
     public class AuthController : ControllerBase
     {
         private readonly AuthService _auth;
-        private readonly ILogger<CustomerRepository> _logger;
+        private readonly ILogger<IGenericRepository<Customer>> _logger;
 
-        public AuthController(AuthService auth, ILogger<CustomerRepository> logger)
+        public AuthController(AuthService auth, ILogger<IGenericRepository<Customer>> logger)
         {
             _auth = auth;
             _logger = logger;
@@ -34,9 +36,13 @@ namespace DapperAPI.Controllers
 
                 return Ok(result);
             }
+            catch(ResourceConflictException ex)
+            {
+                _logger.LogError(ex, "User already exists");
+                return NotFound("Data exists");
+            }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"[Controller Error - Register] {ex.Message}");
                 return StatusCode(500, "Internal server error during registration.");
             }
         }

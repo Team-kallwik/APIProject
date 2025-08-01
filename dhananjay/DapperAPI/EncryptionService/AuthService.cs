@@ -1,17 +1,21 @@
 ﻿using Dapper;
 using DapperAPI.Data;
 using DapperAPI.DTOs;
+using DapperAPI.Model;
 using DapperAPI.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
 using System.Data;
+using DapperAPI.Service;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using DapperAPI.Exceptions;
 
 namespace DapperAPI.Services
 {
-    public class AuthService
+    public class AuthService : IAuthService
     {
         private readonly DapperContext _context;
         private readonly IConfiguration _config;
@@ -28,19 +32,16 @@ namespace DapperAPI.Services
             {
                 using var conn = _context.CreateConnection();
 
-                // Check if user already exists
                 var existingUser = await conn.QueryFirstOrDefaultAsync<User>(
                     "GetUserByEmail",
                     new { Email = request.Email },
                     commandType: CommandType.StoredProcedure);
 
                 if (existingUser != null)
-                    return "User already exists.";
+                    throw new ResourceConflictException();
 
-                // Generate hash and salt
                 CreatePasswordHash(request.Password, out byte[] hash, out byte[] salt);
 
-                // Insert new user
                 await conn.ExecuteAsync(
                     "AddUser",
                     new
@@ -55,8 +56,9 @@ namespace DapperAPI.Services
             }
             catch (Exception ex)
             {
-                // Log exception in real app
+                
                 return $"[Error]: {ex.Message}";
+                
             }
         }
 
@@ -66,7 +68,7 @@ namespace DapperAPI.Services
             {
                 using var conn = _context.CreateConnection();
 
-                // Retrieve user from database
+
                 var user = await conn.QueryFirstOrDefaultAsync<User>(
                     "GetUserByEmail",
                     new { Email = request.Email },
@@ -79,7 +81,6 @@ namespace DapperAPI.Services
             }
             catch (Exception ex)
             {
-                // Log exception in real app
                 return $"[Error]: {ex.Message}";
             }
         }
