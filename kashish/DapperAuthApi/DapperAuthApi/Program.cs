@@ -1,4 +1,5 @@
-﻿using DapperAuthApi.Repository;
+﻿using DapperAuthApi.Middleware;
+using DapperAuthApi.Repository;
 using DapperAuthApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -80,6 +81,8 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddScoped<IEmploRepository, EmploRepository>();
 builder.Services.AddSingleton<IJwtAuthManager, JwtAuthManager>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<IJwtAuthManager, JwtAuthManager>();
 
 var app = builder.Build();
 
@@ -90,7 +93,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 

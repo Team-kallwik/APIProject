@@ -123,9 +123,6 @@ namespace DapperAuthApi.Repository
             }
 
         }
-
-
-
         public async Task<string> LoginAsync(UserModel user)
         {
             try
