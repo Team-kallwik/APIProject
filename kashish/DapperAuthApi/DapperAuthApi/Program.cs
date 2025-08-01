@@ -9,7 +9,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ✅ Serilog Logging Configuration
+// Serilog Logging Configuration
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug() // Use Information() in production
     .WriteTo.Console()
@@ -99,7 +99,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// ✅ Add fallback logger in case something fails
+//  Add fallback logger in case something fails
 try
 {
     Log.Information("✅ Application Starting Up");

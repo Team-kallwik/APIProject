@@ -40,7 +40,7 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] UserModel user)
     {
-        var result = await _repo.RegisterAsync(user); // Fix: _repo now has RegisterAsync method
+        var result = await _repo.RegisterAsync(user); 
         return Ok(new { message = result });
     }
 }

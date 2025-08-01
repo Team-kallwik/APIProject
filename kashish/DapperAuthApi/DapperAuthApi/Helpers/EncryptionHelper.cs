@@ -7,7 +7,7 @@ namespace DapperAuthApi.Helpers
 {
     public static class EncryptionHelper
     {
-        private static readonly string EncryptionKey = "YourSuperSecretKey123!"; // ❗ Replace with a secure key
+        private static readonly string EncryptionKey = "YourSuperSecretKey123!"; 
 
         public static string Encrypt(string plainText)
         {
