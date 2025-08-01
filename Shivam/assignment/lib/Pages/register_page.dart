@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-
+import 'package:assignment/Pages/Dashboard_page.dart';
+import 'package:get/get.dart';
 class RegisterPage extends StatefulWidget {
   @override
   _RegisterPageState createState() => _RegisterPageState();
 }
-
 class _RegisterPageState extends State<RegisterPage> {
   String? selectedGender;
-
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
   final TextEditingController ageController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,8 +129,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
                 onPressed: () {
-                  // TODO: Add validation or backend call
-                  Navigator.pop(context);
+                  Get.to(()=> DashboardPage());
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 14.0),

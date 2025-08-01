@@ -36,7 +36,10 @@ class AppointmentsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Appointments")),
+      appBar: AppBar(
+        leading: BackButton(color: Colors.white,),
+          backgroundColor: Colors.teal,
+          title: Text("Appointments",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),)),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: appointments.length,
@@ -46,6 +49,7 @@ class AppointmentsPage extends StatelessWidget {
             elevation: 3,
             margin: const EdgeInsets.symmetric(vertical: 8),
             child: ListTile(
+              onTap: (){},
               leading: Icon(Icons.medical_services, color: Colors.teal),
               title: Text(
                 appt['doctor']!,

@@ -52,11 +52,13 @@ class _HealthRecordsPageState extends State<HealthRecordsPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Health Records"),
+        leading: BackButton(color: Colors.white,),
+        backgroundColor: Colors.teal,
+        title: Text("Health Records",style: TextStyle(color: Colors.white)),
         bottom: TabBar(
           indicatorColor: Colors.teal,
           dividerColor: Colors.black,
-          labelColor: Colors.teal,
+          labelColor: Colors.white,
           controller: _tabController,
           tabs: [
             Tab(text: 'Reports'),
