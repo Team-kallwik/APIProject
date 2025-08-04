@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'Record_detail_page.dart';
+
 class HealthRecordsPage extends StatefulWidget {
   @override
   _HealthRecordsPageState createState() => _HealthRecordsPageState();
@@ -41,7 +43,14 @@ class _HealthRecordsPageState extends State<HealthRecordsPage>
             title: Text('$type Record ${index + 1}'),
             subtitle: Text('Added on 27 July 2025'),
             trailing: Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RecordDetailsPage(type, index + 1),
+                ),
+              );
+            },
           ),
         );
       },

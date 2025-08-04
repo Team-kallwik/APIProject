@@ -34,7 +34,7 @@ class _DoctorsListPageState extends State<DoctorsListPage> {
     {
       'name': 'Dr. Vaishnavi Bajpai',
       'specialty': 'Veterinary Ophthalmologist',
-      'rating': 3.8,
+      'rating': 4.8,
       'image': 'https://via.placeholder.com/150',
     },
     {
@@ -47,6 +47,12 @@ class _DoctorsListPageState extends State<DoctorsListPage> {
       'name': 'Dr.Dhananjay singh Panwar',
       'specialty': 'Dentist',
       'rating': 4.8,
+      'image': 'https://via.placeholder.com/150',
+    },
+    {
+      'name': 'Dr.Abhishek Sharma',
+      'specialty': 'Psychiatrist',
+      'rating': 4.9,
       'image': 'https://via.placeholder.com/150',
     },
 
