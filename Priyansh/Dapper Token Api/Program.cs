@@ -99,8 +99,10 @@ builder.Services.AddAuthorization();
 
 // Register Repository Pattern services
 builder.Services.AddScoped<IRepository, Repository>();
+builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
 // Register Business Logic services
 builder.Services.AddScoped<IAuthService, AuthService>();
