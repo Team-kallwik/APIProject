@@ -6,15 +6,27 @@ using System.Data;
 
 namespace Dapper_Token_Api.Repository.Implementation
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : GenericRepository<User>, IUserRepository
     {
         private readonly IRepository _repository;
 
-        public UserRepository(IRepository repository)
+        public UserRepository(IRepository repository) : base(repository)
         {
             _repository = repository;
         }
 
+        // Override generic methods to use stored procedures
+        public override async Task<User?> GetByIdAsync(int id)
+        {
+            return await GetByIdUsingSpAsync(id, "[dbo].[sp_GetUserById]");
+        }
+
+        public override async Task<IEnumerable<User>> GetAllAsync()
+        {
+            return await GetAllUsingSpAsync("[dbo].[sp_GetAllUsers]");
+        }
+
+        // Keep your existing business-specific methods
         public async Task<User?> GetByUsernameAsync(string username)
         {
             var parameters = new { Username = username };
@@ -29,15 +41,6 @@ namespace Dapper_Token_Api.Repository.Implementation
             var parameters = new { Email = email };
             return await _repository.QuerySingleOrDefaultAsync<User>(
                 "[dbo].[sp_GetUserByEmail]",
-                parameters,
-                CommandType.StoredProcedure);
-        }
-
-        public async Task<User?> GetByIdAsync(int id)
-        {
-            var parameters = new { Id = id };
-            return await _repository.QuerySingleOrDefaultAsync<User>(
-                "[dbo].[sp_GetUserById]",
                 parameters,
                 CommandType.StoredProcedure);
         }
@@ -78,15 +81,10 @@ namespace Dapper_Token_Api.Repository.Implementation
             return rowsAffected > 0;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        // Override generic delete to use stored procedure
+        public override async Task<bool> DeleteAsync(int id)
         {
-            var parameters = new { Id = id };
-            var rowsAffected = await _repository.ExecuteAsync(
-                "[dbo].[sp_DeleteUser]",
-                parameters,
-                CommandType.StoredProcedure);
-
-            return rowsAffected > 0;
+            return await DeleteUsingSpAsync(id, "[dbo].[sp_DeleteUser]");
         }
 
         public async Task<bool> IsUsernameExistsAsync(string username)
@@ -109,13 +107,6 @@ namespace Dapper_Token_Api.Repository.Implementation
                 CommandType.StoredProcedure);
 
             return count > 0;
-        }
-
-        public async Task<IEnumerable<User>> GetAllAsync()
-        {
-            return await _repository.QueryAsync<User>(
-                "[dbo].[sp_GetAllUsers]",
-                commandType: CommandType.StoredProcedure);
         }
     }
 }

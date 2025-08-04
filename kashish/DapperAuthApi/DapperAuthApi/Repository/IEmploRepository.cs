@@ -9,5 +9,7 @@ namespace DapperAuthApi.Repository
         Task<int> CreateAsync(Emplo emp);
         Task<int> UpdateAsync(Emplo emp);
         Task<int> DeleteAsync(int id);
+        Task<string> RegisterAsync(UserModel user);
+        Task<string> LoginAsync(UserModel user);
     }
 }

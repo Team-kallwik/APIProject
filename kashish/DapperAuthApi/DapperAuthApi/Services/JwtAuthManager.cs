@@ -47,7 +47,6 @@ namespace DapperAuthApi.Services
             }
             catch (Exception ex)
             {
-                // You can log the error here if needed
                 throw new Exception("Error generating JWT token.", ex);
             }
         }
