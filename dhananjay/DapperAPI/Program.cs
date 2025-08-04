@@ -87,11 +87,14 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
 app.UseSwagger();
 app.UseSwaggerUI();
 app.MapScalarApiReference();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+
+
 app.MapControllers();
 app.Run();
