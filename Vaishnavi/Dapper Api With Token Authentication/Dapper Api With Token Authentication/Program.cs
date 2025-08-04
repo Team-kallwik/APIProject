@@ -1,6 +1,6 @@
+using Dapper_Api_With_Token_Authentication.Helpers;
 using Dapper_Api_With_Token_Authentication.Repository.Imp;
 using Dapper_Api_With_Token_Authentication.Repository.Interface;
-using Dapper_Api_With_Token_Authentication.Services.Implementation;
 using Dapper_Api_With_Token_Authentication.Services.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -10,19 +10,28 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//Serilog configuration read from appsettings.json
+//Configure Serilog from appsettings.json
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
     .CreateLogger();
 
 builder.Host.UseSerilog(); // Attach Serilog
 
-// Add services
+//Add controllers
 builder.Services.AddControllers();
+
+//Register AES Encryption Helper (Singleton)
+builder.Services.AddSingleton<AesEncryptionHelper>();
+
+//Generic Repository Registration
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+//Employee-specific Repository and Service Registration
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
-// JWT Authentication Configuration
+//JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -39,7 +48,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// Swagger with JWT Authorization
+//Swagger with JWT support
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Dapper Api With Token Authentication", Version = "v1" });
@@ -71,7 +80,7 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Middleware
+//Middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -79,7 +88,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseSerilogRequestLogging(); // Logs HTTP requests
+
+//Add Authentication and Global Exception Middleware
 app.UseAuthentication();
+app.UseMiddleware<ExceptionMiddleware>(); //Global Exception Middleware Added
 app.UseAuthorization();
 
 app.MapControllers();

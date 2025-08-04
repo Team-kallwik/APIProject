@@ -5,23 +5,30 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-
+using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-// ✅ Swagger with OpenAPI version
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/log.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
+//  Swagger with OpenAPI version
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
     {
         Title = "DapperWebApiWithAuthentication",
-        Version = "v1"  // ✅ This must match Swagger UI dropdown and be a valid string (e.g. "v1")
+        Version = "v1"  
     });
 
-    // ✅ Add Bearer token support
+    //  Add Bearer token support
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -48,12 +55,13 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// ✅ Register Services
+//  Register Services
 builder.Services.AddScoped<DapperContext>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<EncryptionHelper>();
 
-// ✅ JWT Configuration
+//  JWT Configuration
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -74,7 +82,7 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// ✅ Swagger UI in dev
+// Swagger UI in dev
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

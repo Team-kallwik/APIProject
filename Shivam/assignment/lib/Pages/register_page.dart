@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
-
+import 'package:assignment/Pages/Dashboard_page.dart';
+import 'package:get/get.dart';
 class RegisterPage extends StatefulWidget {
   @override
   _RegisterPageState createState() => _RegisterPageState();
 }
-
 class _RegisterPageState extends State<RegisterPage> {
   String? selectedGender;
-
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
   final TextEditingController ageController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +31,11 @@ class _RegisterPageState extends State<RegisterPage> {
               decoration: InputDecoration(
                 labelText: 'Full Name',
                 prefixIcon: Icon(Icons.person_outline),
-                border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.black,fontSize: 15),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.teal),
+                  ),
+                  border: OutlineInputBorder()
               ),
             ),
             SizedBox(height: 15),
@@ -44,7 +45,11 @@ class _RegisterPageState extends State<RegisterPage> {
               decoration: InputDecoration(
                 labelText: 'Email',
                 prefixIcon: Icon(Icons.email_outlined),
-                border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.black,fontSize: 15),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.teal),
+                  ),
+                  border: OutlineInputBorder()
               ),
             ),
             SizedBox(height: 15),
@@ -54,7 +59,11 @@ class _RegisterPageState extends State<RegisterPage> {
               decoration: InputDecoration(
                 labelText: 'Password',
                 prefixIcon: Icon(Icons.lock_outline),
-                border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.black,fontSize: 15),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.teal),
+                  ),
+                  border: OutlineInputBorder()
               ),
             ),
             SizedBox(height: 15),
@@ -64,7 +73,11 @@ class _RegisterPageState extends State<RegisterPage> {
               decoration: InputDecoration(
                 labelText: 'Confirm Password',
                 prefixIcon: Icon(Icons.lock_outline),
-                border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.black,fontSize: 15),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.teal),
+                  ),
+                  border: OutlineInputBorder()
               ),
             ),
             SizedBox(height: 15),
@@ -73,7 +86,11 @@ class _RegisterPageState extends State<RegisterPage> {
               decoration: InputDecoration(
                 labelText: 'Gender',
                 prefixIcon: Icon(Icons.person),
-                border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.black,fontSize: 15),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.teal),
+                  ),
+                  border: OutlineInputBorder()
               ),
               items: ['Male', 'Female', 'Other']
                   .map(
@@ -94,20 +111,29 @@ class _RegisterPageState extends State<RegisterPage> {
               decoration: InputDecoration(
                 labelText: 'Age',
                 prefixIcon: Icon(Icons.cake_outlined),
-                border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.black,fontSize: 15),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.teal),
+                  ),
+                  border: OutlineInputBorder()
               ),
             ),
             SizedBox(height: 25),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
                 onPressed: () {
-                  // TODO: Add validation or backend call
-                  Navigator.pop(context);
+                  Get.to(()=> DashboardPage());
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 14.0),
-                  child: Text("Register", style: TextStyle(fontSize: 16)),
+                  child: Text("Register", style: TextStyle(fontSize: 16,color: Colors.white)),
                 ),
               ),
             ),

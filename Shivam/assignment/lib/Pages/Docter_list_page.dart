@@ -8,23 +8,48 @@ class DoctorsListPage extends StatefulWidget {
 class _DoctorsListPageState extends State<DoctorsListPage> {
   final List<Map<String, dynamic>> doctors = [
     {
-      'name': 'Dr. Anjali Mehra',
+      'name': 'Dr. Kashish Rithe',
       'specialty': 'Cardiologist',
       'rating': 4.8,
       'image': 'https://via.placeholder.com/150',
     },
     {
-      'name': 'Dr. Rohit Gupta',
+      'name': 'Dr. Yaju Patel',
+      'specialty': 'psychiatrist ',
+      'rating': 5.0,
+      'image': 'https://via.placeholder.com/150',
+    },
+    {
+      'name': 'Dr. Abhishek Raghuvanshi',
+      'specialty': 'Pediatrician',
+      'rating': 4.9,
+      'image': 'https://via.placeholder.com/150',
+    },
+    {
+      'name': 'Dr. Priyansh Pal',
+      'specialty': 'Neurologist',
+      'rating': 4.9,
+      'image': 'https://via.placeholder.com/150',
+    },
+    {
+      'name': 'Dr. Vaishnavi Bajpai',
+      'specialty': 'Veterinary Ophthalmologist',
+      'rating': 3.8,
+      'image': 'https://via.placeholder.com/150',
+    },
+    {
+      'name': 'Dr. Vikas Tiwari',
       'specialty': 'Dermatologist',
       'rating': 4.6,
       'image': 'https://via.placeholder.com/150',
     },
     {
-      'name': 'Dr. Sneha Kapoor',
-      'specialty': 'Pediatrician',
-      'rating': 4.9,
+      'name': 'Dr.Dhananjay singh Panwar',
+      'specialty': 'Dentist',
+      'rating': 4.8,
       'image': 'https://via.placeholder.com/150',
     },
+
   ];
 
   String searchQuery = '';
@@ -91,7 +116,7 @@ class _DoctorsListPageState extends State<DoctorsListPage> {
                     ),
                     trailing: ElevatedButton(
                       onPressed: () {},
-                      child: Text('Book Now'),
+                      child: Text('Book Now',style: TextStyle(color: Colors.white),),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.teal,
                       ),
