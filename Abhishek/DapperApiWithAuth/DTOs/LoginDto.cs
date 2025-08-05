@@ -1,8 +1,9 @@
-﻿namespace DapperWebApiWIthAuthentication.Models
+﻿namespace DapperApiWithAuth.DTOs
 {
-    public class LoginEmployee
+    public class LoginDto
     {
         public string Username { get; set; }
         public string Password { get; set; }
+
     }
 }

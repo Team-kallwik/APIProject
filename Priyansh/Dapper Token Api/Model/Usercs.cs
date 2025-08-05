@@ -1,6 +1,8 @@
-﻿namespace Dapper_Token_Api.Model
+﻿using Dapper_Token_Api.Repository.Interface;
+
+namespace Dapper_Token_Api.Model
 {
-    public class User
+    public class User : IBaseEntity
     {
         public int Id { get; set; }
         public string Username { get; set; } = string.Empty;

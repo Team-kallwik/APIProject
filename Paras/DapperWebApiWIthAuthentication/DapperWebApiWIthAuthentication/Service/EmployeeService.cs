@@ -7,10 +7,10 @@ namespace DapperWebApiWIthAuthentication.Service
 {
     public class EmployeeService : IEmployeeService
     {
-        private readonly IEmployeeRepository _repository;
+        private readonly IGenericRepository<Employee> _repository;
         private readonly ILogger<EmployeeService> _logger;
 
-        public EmployeeService(IEmployeeRepository repository, ILogger<EmployeeService> logger)
+        public EmployeeService(IGenericRepository<Employee> repository, ILogger<EmployeeService> logger)
         {
             _repository = repository;
             _logger = logger;
@@ -20,7 +20,8 @@ namespace DapperWebApiWIthAuthentication.Service
         {
             try
             {
-                var jsonResult = await _repository.GetAllAsync();
+                string storedProcedure = "GetAllEmployee";
+                var jsonResult = await _repository.GetAllAsync(storedProcedure);
 
                 if (string.IsNullOrWhiteSpace(jsonResult))
                 {
@@ -55,7 +56,9 @@ namespace DapperWebApiWIthAuthentication.Service
         {
             try
             {
-                var employee = await _repository.GetByIdAsync(id);
+
+                string storedProcedure = "GetEmployeeById";
+                var employee = await _repository.GetByIdAsync(storedProcedure,id);
 
                 if (employee == null)
                 {
@@ -77,7 +80,8 @@ namespace DapperWebApiWIthAuthentication.Service
         {
             try
             {
-                await _repository.CreateAsync(dto);
+                string storedProcedure = "CreateEmployee";
+                await _repository.CreateAsync(storedProcedure, dto);
                 _logger.LogInformation("Employee created successfully.");
             }
             catch (Exception ex)
@@ -91,7 +95,8 @@ namespace DapperWebApiWIthAuthentication.Service
         {
             try
             {
-                var updated = await _repository.UpdateAsync(employee);
+                string storedProcedure = "UpdateEmployee";
+                var updated = await _repository.UpdateAsync(storedProcedure, employee);
 
                 if (!updated)
                 {
@@ -113,7 +118,8 @@ namespace DapperWebApiWIthAuthentication.Service
         {
             try
             {
-                var deleted = await _repository.DeleteAsync(id);
+                string storedProcedure = "DeleteEmployee";
+                var deleted = await _repository.DeleteAsync(storedProcedure, id);
 
                 if (!deleted)
                 {

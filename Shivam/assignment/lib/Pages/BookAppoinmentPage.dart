@@ -124,7 +124,6 @@ class BookAppointmentPage extends StatelessWidget {
                 validator: (value) => value!.isEmpty ? 'Please enter your symptoms' : null,
               ),
               SizedBox(height: 24),
-
               // Confirm Button
               Center(
                 child: ElevatedButton.icon(

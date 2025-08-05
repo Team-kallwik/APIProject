@@ -57,7 +57,6 @@ namespace Dapper_Token_Api.Service
                 throw new InvalidOperationException("Email already exists");
             }
 
-            var userId = await _userRepository.CreateAsync(registerDto);
             return "User registered successfully. Please login to get access token.";
         }
 

@@ -5,12 +5,19 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-
+using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/log.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 //  Swagger with OpenAPI version
 builder.Services.AddSwaggerGen(c =>
@@ -50,8 +57,9 @@ builder.Services.AddSwaggerGen(c =>
 
 //  Register Services
 builder.Services.AddScoped<DapperContext>();
-builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IGenericRepository<Employee>, GenericRepository<Employee>>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<EncryptionHelper>();
 
 //  JWT Configuration
 var jwtSettings = builder.Configuration.GetSection("Jwt");

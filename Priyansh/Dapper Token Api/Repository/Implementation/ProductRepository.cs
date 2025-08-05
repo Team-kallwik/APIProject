@@ -6,31 +6,27 @@ using System.Data;
 
 namespace Dapper_Token_Api.Repository.Implementation
 {
-    public class ProductRepository : IProductRepository
+    public class ProductRepository : GenericRepository<Product>, IProductRepository
     {
         private readonly IRepository _repository;
 
-        public ProductRepository(IRepository repository)
+        public ProductRepository(IRepository repository) : base(repository)
         {
             _repository = repository;
         }
 
-        public async Task<IEnumerable<Product>> GetAllAsync()
+        // Override generic methods to use stored procedures
+        public override async Task<IEnumerable<Product>> GetAllAsync()
         {
-            return await _repository.QueryAsync<Product>(
-                "[dbo].[sp_GetAllProducts]",
-                commandType: CommandType.StoredProcedure);
+            return await GetAllUsingSpAsync("[dbo].[sp_GetAllProducts]");
         }
 
-        public async Task<Product?> GetByIdAsync(int id)
+        public override async Task<Product?> GetByIdAsync(int id)
         {
-            var parameters = new { Id = id };
-            return await _repository.QuerySingleOrDefaultAsync<Product>(
-                "[dbo].[sp_GetProductById]",
-                parameters,
-                CommandType.StoredProcedure);
+            return await GetByIdUsingSpAsync(id, "[dbo].[sp_GetProductById]");
         }
 
+        // Keep your existing business-specific methods
         public async Task<Product> CreateAsync(ProductCreateDto productDto, int userId)
         {
             var parameters = new
@@ -40,7 +36,6 @@ namespace Dapper_Token_Api.Repository.Implementation
                 Price = productDto.Price,
                 CreatedBy = userId
             };
-
             return await _repository.QuerySingleAsync<Product>(
                 "[dbo].[sp_CreateProduct]",
                 parameters,

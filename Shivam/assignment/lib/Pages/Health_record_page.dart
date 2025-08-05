@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'Record_detail_page.dart';
+
 class HealthRecordsPage extends StatefulWidget {
   @override
   _HealthRecordsPageState createState() => _HealthRecordsPageState();
@@ -41,7 +43,14 @@ class _HealthRecordsPageState extends State<HealthRecordsPage>
             title: Text('$type Record ${index + 1}'),
             subtitle: Text('Added on 27 July 2025'),
             trailing: Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RecordDetailsPage(type, index + 1),
+                ),
+              );
+            },
           ),
         );
       },
@@ -52,11 +61,13 @@ class _HealthRecordsPageState extends State<HealthRecordsPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Health Records"),
+        leading: BackButton(color: Colors.white,),
+        backgroundColor: Colors.teal,
+        title: Text("Health Records",style: TextStyle(color: Colors.white)),
         bottom: TabBar(
           indicatorColor: Colors.teal,
           dividerColor: Colors.black,
-          labelColor: Colors.teal,
+          labelColor: Colors.white,
           controller: _tabController,
           tabs: [
             Tab(text: 'Reports'),

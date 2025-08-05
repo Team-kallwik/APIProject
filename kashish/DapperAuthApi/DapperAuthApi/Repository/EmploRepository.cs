@@ -1,102 +1,167 @@
 ﻿using Dapper;
+using DapperAuthApi.Helpers;
+using DapperAuthApi.Models;
+using DapperAuthApi.Services;
+using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 using System.Data;
-using System.Text.Json;
-using DapperAuthApi.Models;
-using DapperAuthApi.Repository;
 
-public class EmploRepository : IEmploRepository
+namespace DapperAuthApi.Repository
 {
-    private readonly string _connectionString;
-    public EmploRepository(IConfiguration config)
+    public class EmploRepository : GenericRepository<Emplo>, IEmploRepository
     {
-        _connectionString = config.GetConnectionString("DefaultConnection");
-    }
+        private readonly ILogger<EmploRepository> _logger;
+        private readonly IJwtAuthManager _jwt;
 
-    private IDbConnection Connection => new MySqlConnection(_connectionString);
+        public EmploRepository(IConfiguration config, ILogger<EmploRepository> logger, IJwtAuthManager jwt)
+            : base(config.GetConnectionString("DefaultConnection"))
+        {
+            _jwt = jwt;
+            _logger = logger;
+        }
 
-    public async Task<IEnumerable<Emplo>> GetAllAsync()
-    {
-        try
+        public async Task<IEnumerable<Emplo>> GetAllAsync()
         {
-            using var conn = Connection;
-            return await conn.QueryAsync<Emplo>("GetAllEmployees", commandType: CommandType.StoredProcedure);
+            try
+            {
+                _logger.LogInformation("Getting all employees...");
+                return await base.GetAllAsync("sp_GetAllEmp");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred in GetAllAsync.");
+                throw;
+            }
         }
-        catch (Exception ex)
-        {
-            throw new Exception("Error fetching employees.", ex);
-        }
-    }
 
-    public async Task<Emplo> GetByIdAsync(int id)
-    {
-        try
+        public async Task<Emplo> GetByIdAsync(int id)
         {
-            using var conn = Connection;
-            string jsonParam = JsonSerializer.Serialize(new { Id = id });
+            try
+            {
+                _logger.LogInformation($"Getting employee with Id = {id}");
+                return await base.GetByIdAsync("sp_GetEmpById", new { p_Id = id });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred in GetByIdAsync for Id = {id}");
+                throw;
+            }
+        }
 
-            return await conn.QueryFirstOrDefaultAsync<Emplo>(
-                "GetEmployeeByIdFromJson",
-                new { empJson = jsonParam },
-                commandType: CommandType.StoredProcedure);
-        }
-        catch (Exception ex)
+        public async Task<int> CreateAsync(Emplo emp)
         {
-            throw new Exception($"Error fetching employee with Id = {id}.", ex);
+            try
+            {
+                _logger.LogInformation($"Creating employee: {emp.Name}");
+                return await base.CreateAsync("sp_InsertEmp", new
+                {
+                    p_Name = emp.Name,
+                    p_Department = emp.Department,
+                    p_Salary = emp.Salary
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while creating employee: {emp.Name}");
+                throw;
+            }
         }
-    }
 
-    public async Task<int> CreateAsync(Emplo emp)
-    {
-        try
+        public async Task<int> UpdateAsync(Emplo emp)
         {
-            using var conn = Connection;
-            string jsonParam = JsonSerializer.Serialize(emp);
+            try
+            {
+                _logger.LogInformation($"Updating employee with Id = {emp.Id}");
+                return await base.UpdateAsync("sp_UpdateEmp", new
+                {
+                    p_Id = emp.Id,
+                    p_Name = emp.Name,
+                    p_Department = emp.Department,
+                    p_Salary = emp.Salary
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while updating employee with Id = {emp.Id}");
+                throw;
+            }
+        }
 
-            return await conn.ExecuteAsync(
-                "InsertEmployeeFromJson",
-                new { empJson = jsonParam },
-                commandType: CommandType.StoredProcedure);
-        }
-        catch (Exception ex)
+        public async Task<int> DeleteAsync(int id)
         {
-            throw new Exception("Error inserting employee.", ex);
+            try
+            {
+                _logger.LogInformation($"Deleting employee with Id = {id}");
+                return await base.DeleteAsync("sp_DeleteEmp", new { p_Id = id });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while deleting employee with Id = {id}");
+                throw;
+            }
         }
-    }
+        public async Task<string> RegisterAsync(UserModel user)
+        {
+            try
+            {
+                using var connection = Connection;
+                var parameters = new DynamicParameters();
 
-    public async Task<int> UpdateAsync(Emplo emp)
-    {
-        try
-        {
-            using var conn = Connection;
-            string jsonParam = JsonSerializer.Serialize(emp);
+                // Encrypt password if needed
+                string encryptedPassword = EncryptionHelper.Encrypt(user.Password);
+                parameters.Add("p_Username", user.Username);
+                parameters.Add("p_Password", encryptedPassword);
 
-            return await conn.ExecuteAsync(
-                "UpdateEmployeeFromJson",
-                new { empJson = jsonParam },
-                commandType: CommandType.StoredProcedure);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error updating employee with Id = {emp.Id}.", ex);
-        }
-    }
+                await connection.ExecuteAsync("sp_RegisterUser", parameters, commandType: CommandType.StoredProcedure);
 
-    public async Task<int> DeleteAsync(int id)
-    {
-        try
-        {
-            using var conn = Connection;
-            string jsonParam = JsonSerializer.Serialize(new { Id = id });
+                return "User registered successfully!";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in RegisterAsync: {ex.Message}");
+                throw;
+            }
 
-            return await conn.ExecuteAsync(
-                "DeleteEmployeeFromJson",
-                new { empJson = jsonParam },
-                commandType: CommandType.StoredProcedure);
         }
-        catch (Exception ex)
+        public async Task<string> LoginAsync(UserModel user)
         {
-            throw new Exception($"Error deleting employee with Id = {id}.", ex);
+            try
+            {
+                using var connection = Connection;
+
+                var parameters = new DynamicParameters();
+                parameters.Add("p_Username", user.Username);
+
+                var dbUser = await connection.QueryFirstOrDefaultAsync<UserModel>(
+                    "sp_GetRegisterByUsername",
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
+
+                if (dbUser == null)
+                {
+                    _logger.LogWarning("Login failed: User not found.");
+                    return null;
+                }
+
+                string decryptedPassword = EncryptionHelper.Decrypt(dbUser.Password);
+
+                if (user.Password != decryptedPassword)
+                {
+                    _logger.LogWarning("Login failed: Incorrect password.");
+                    return null;
+                }
+
+                string token = _jwt.GenerateToken(user.Username);
+                return token;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in LoginAsync");
+                throw;
+            }
         }
+    
     }
 }
+    

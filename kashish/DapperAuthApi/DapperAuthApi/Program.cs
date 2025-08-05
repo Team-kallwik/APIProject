@@ -1,28 +1,36 @@
+﻿using DapperAuthApi.Middleware;
 using DapperAuthApi.Repository;
 using DapperAuthApi.Services;
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add Configuration for Connection String
+// Serilog Logging Configuration
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug() // Use Information() in production
+    .WriteTo.Console()
+    .WriteTo.File("Logs/app_log.txt", rollingInterval: RollingInterval.Day)
+    .Enrich.FromLogContext()
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
+// JWT Config
 var configuration = builder.Configuration;
 var jwtSettings = configuration.GetSection("Jwt");
 var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
 
-// Add Controller Services
 builder.Services.AddControllers();
 
-//  Add Swagger and Configure JWT Bearer Authentication
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(option =>
 {
     option.SwaggerDoc("v1", new OpenApiInfo { Title = "Dapper JWT API", Version = "v1" });
 
-    // Add JWT Auth to Swagger
     option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -38,18 +46,17 @@ builder.Services.AddSwaggerGen(option =>
         {
             new OpenApiSecurityScheme
             {
-              Reference = new OpenApiReference
-              {
-                Type = ReferenceType.SecurityScheme,
-                Id = "Bearer"
-              }
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
             },
             new string[] {}
         }
     });
 });
 
-//  Add JWT Authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -71,13 +78,14 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-//  Register Custom Services (Dapper Repo + JWT Manager)
 builder.Services.AddScoped<IEmploRepository, EmploRepository>();
 builder.Services.AddSingleton<IJwtAuthManager, JwtAuthManager>();
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<IJwtAuthManager, JwtAuthManager>();
 
 var app = builder.Build();
 
-//  Middleware Pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -85,11 +93,23 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-//  Enable Authentication & Authorization
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+//  Add fallback logger in case something fails
+try
+{
+    Log.Information("✅ Application Starting Up");
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "❌ Application failed to start correctly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

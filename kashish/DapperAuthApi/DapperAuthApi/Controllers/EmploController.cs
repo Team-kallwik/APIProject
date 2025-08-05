@@ -2,89 +2,101 @@
 using DapperAuthApi.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace DapperAuthApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class EmploController : Controller
+    public class EmploController : ControllerBase
     {
         private readonly IEmploRepository _repo;
+        private readonly ILogger<EmploController> _logger;
 
-        public EmploController(IEmploRepository repo)
+        public EmploController(IEmploRepository repo, ILogger<EmploController> logger)
         {
             _repo = repo;
+            _logger = logger;
         }
 
         [HttpGet("GetAllEmployee")]
         public async Task<IActionResult> GetAll()
         {
-            try
-            {
-                var employees = await _repo.GetAllAsync();
-                return Ok(employees);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { Message = "Error fetching employees.", Error = ex.Message });
-            }
+            _logger.LogInformation(" GET: GetAllEmployee called");
+
+            var employees = await _repo.GetAllAsync();
+            _logger.LogInformation(" Successfully fetched all employees. Count: {Count}", employees?.Count() ?? 0);
+            return Ok(employees);
         }
 
         [HttpGet("GetEmployeeById/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            try
+            _logger.LogInformation(" GET: GetEmployeeById called with Id: {Id}", id);
+
+            var emp = await _repo.GetByIdAsync(id);
+
+            if (emp == null)
             {
-                var emp = await _repo.GetByIdAsync(id);
-                return emp == null ? NotFound(new { Message = "Employee not found." }) : Ok(emp);
+                _logger.LogWarning(" Employee not found with Id: {Id}", id);
+                return NotFound("Employee not found.");
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { Message = "Error fetching employee.", Error = ex.Message });
-            }
+
+            _logger.LogInformation(" Found employee with Id: {Id}", id);
+            return Ok(emp);
         }
 
         [HttpPost("CreateEmployee")]
-        public async Task<IActionResult> Create(Emplo emp)
+        public async Task<IActionResult> Create([FromBody] Emplo emp)
         {
-            try
+            _logger.LogInformation(" POST: CreateEmployee called for Name: {Name}", emp.Name);
+
+            var result = await _repo.CreateAsync(emp);
+
+            if (result > 0)
             {
-                var result = await _repo.CreateAsync(emp);
-                return result > 0 ? Ok("Inserted") : BadRequest("Insertion failed.");
+                _logger.LogInformation(" Employee created: {Name}", emp.Name);
+                return Ok("Inserted");
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { Message = "Error creating employee.", Error = ex.Message });
-            }
+
+            _logger.LogWarning(" Failed to insert employee: {Name}", emp.Name);
+            return BadRequest("Failed to insert employee.");
         }
 
         [HttpPut("UpdateEmployee")]
-        public async Task<IActionResult> Update(Emplo emp)
+        public async Task<IActionResult> Update([FromBody] Emplo emp)
         {
-            try
+            _logger.LogInformation(" PUT: UpdateEmployee called for Id: {Id}", emp.Id);
+
+            var result = await _repo.UpdateAsync(emp);
+
+            if (result > 0)
             {
-                var result = await _repo.UpdateAsync(emp);
-                return result > 0 ? Ok("Updated") : NotFound(new { Message = "Employee not found or update failed." });
+                _logger.LogInformation(" Employee updated. Id: {Id}", emp.Id);
+                return Ok("Updated");
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { Message = "Error updating employee.", Error = ex.Message });
-            }
+
+            _logger.LogWarning(" No employee found to update. Id: {Id}", emp.Id);
+            return NotFound("Employee not found for update.");
         }
 
         [HttpDelete("DeleteEmployee/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            try
+            _logger.LogInformation(" DELETE: DeleteEmployee called for Id: {Id}", id);
+
+            var result = await _repo.DeleteAsync(id);
+
+            if (result > 0)
             {
-                var result = await _repo.DeleteAsync(id);
-                return result > 0 ? Ok("Deleted") : NotFound(new { Message = "Employee not found or delete failed." });
+                _logger.LogInformation(" Employee deleted. Id: {Id}", id);
+                return Ok("Deleted");
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { Message = "Error deleting employee.", Error = ex.Message });
-            }
+
+            _logger.LogWarning(" No employee found to delete. Id: {Id}", id);
+            return NotFound("Employee not found for deletion.");
         }
     }
 }
