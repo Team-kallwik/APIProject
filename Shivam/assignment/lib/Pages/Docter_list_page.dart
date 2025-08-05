@@ -15,7 +15,7 @@ class _DoctorsListPageState extends State<DoctorsListPage> {
     },
     {
       'name': 'Dr. Yaju Patel',
-      'specialty': 'psychiatrist ',
+      'specialty': 'psychotherapist',
       'rating': 5.0,
       'image': 'https://via.placeholder.com/150',
     },
@@ -45,7 +45,7 @@ class _DoctorsListPageState extends State<DoctorsListPage> {
     },
     {
       'name': 'Dr.Dhananjay singh Panwar',
-      'specialty': 'Dentist',
+      'specialty': 'Cardiologist',
       'rating': 4.8,
       'image': 'https://via.placeholder.com/150',
     },

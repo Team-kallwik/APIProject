@@ -1,53 +1,74 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+
 import '../Controller/appointment_controller.dart';
+import '../data/doctor_data.dart'; // ✅ Import doctor list
+
 class BookAppointmentPage extends StatelessWidget {
+  final bool isEditing;
+  final Appointment? existingAppointment;
+
+  BookAppointmentPage({
+    this.isEditing = false,
+    this.existingAppointment,
+    Key? key,
+  }) : super(key: key);
   final AppointmentController controller = Get.put(AppointmentController());
   final _formKey = GlobalKey<FormState>();
   final TextEditingController symptomsController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    if (isEditing && existingAppointment != null) {
+      controller.loadAppointmentForEdit(existingAppointment!);
+    }
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(color: Colors.white,),
-        title: Text('Book Appointment',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
+        leading: const BackButton(color: Colors.white),
+        title: const Text(
+          'Book Appointment',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.teal,
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Doctor Selection
-              Text("Select Doctor", style: TextStyle(fontWeight: FontWeight.bold)),
-              SizedBox(height: 8),
+              const Text("Select Doctor", style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
               Obx(() => DropdownButtonFormField<String>(
-                value: controller.selectedDoctor.value,
-                decoration: InputDecoration(
+                value: controller.selectedDoctor.value.isEmpty
+                    ? null
+                    : controller.selectedDoctor.value,
+                decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.person),
                   border: OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.teal),
                   ),
                 ),
-                items: ['Dr. Sharma', 'Dr. Mehta', 'Dr. Verma']
-                    .map((doc) => DropdownMenuItem(
-                  value: doc,
-                  child: Text(doc),
-                ))
-                    .toList(),
-                onChanged: (value) => controller.selectedDoctor.value = value,
-                validator: (value) => value == null ? 'Please select a doctor' : null,
+                items: doctorNames.map((doc) {
+                  return DropdownMenuItem(
+                    value: doc,
+                    child: Text(doc),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  controller.selectedDoctor.value = value ?? '';
+                },
+                validator: (value) => value == null || value.isEmpty ? 'Please select a doctor' : null,
               )),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
 
               // Date Picker
-              Text("Select Date", style: TextStyle(fontWeight: FontWeight.bold)),
-              SizedBox(height: 8),
+              const Text("Select Date", style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
               Obx(() {
                 return TextFormField(
                   readOnly: true,
@@ -56,7 +77,7 @@ class BookAppointmentPage extends StatelessWidget {
                         ? ''
                         : DateFormat('yyyy-MM-dd').format(controller.selectedDate.value!),
                   ),
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.calendar_today),
                     border: OutlineInputBorder(),
                     focusedBorder: OutlineInputBorder(
@@ -75,11 +96,11 @@ class BookAppointmentPage extends StatelessWidget {
                   validator: (value) => value!.isEmpty ? 'Please select a date' : null,
                 );
               }),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
 
               // Time Picker
-              Text("Select Time", style: TextStyle(fontWeight: FontWeight.bold)),
-              SizedBox(height: 8),
+              const Text("Select Time", style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
               Obx(() {
                 return TextFormField(
                   readOnly: true,
@@ -88,7 +109,7 @@ class BookAppointmentPage extends StatelessWidget {
                         ? ''
                         : controller.selectedTime.value!.format(context),
                   ),
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.access_time),
                     border: OutlineInputBorder(),
                     focusedBorder: OutlineInputBorder(
@@ -105,15 +126,15 @@ class BookAppointmentPage extends StatelessWidget {
                   validator: (value) => value!.isEmpty ? 'Please select a time' : null,
                 );
               }),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
 
               // Symptoms
-              Text("Symptoms/Concerns", style: TextStyle(fontWeight: FontWeight.bold)),
-              SizedBox(height: 8),
+              const Text("Symptoms/Concerns", style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
               TextFormField(
                 controller: symptomsController,
                 maxLines: 3,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.notes),
                   border: OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
@@ -123,7 +144,8 @@ class BookAppointmentPage extends StatelessWidget {
                 onChanged: controller.updateSymptoms,
                 validator: (value) => value!.isEmpty ? 'Please enter your symptoms' : null,
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
+
               // Confirm Button
               Center(
                 child: ElevatedButton.icon(
@@ -132,31 +154,48 @@ class BookAppointmentPage extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   ),
-                  icon: Icon(Icons.check_circle_outline, color: Colors.white),
-                  label: Text("Confirm Appointment", style: TextStyle(color: Colors.white)),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      Get.dialog(
-                        AlertDialog(
-                          title: Text("Success"),
-                          content: Text(
-                            "Appointment booked with ${controller.selectedDoctor.value} on "
-                                "${DateFormat('yyyy-MM-dd').format(controller.selectedDate.value!)} at "
-                                "${controller.selectedTime.value!.format(context)}.\n\n"
-                                "Symptoms: ${controller.symptoms.value}",
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Get.back(),
-                              child: Text("OK"),
+                  icon: const Icon(Icons.check_circle_outline, color: Colors.white),
+                  label: const Text("Confirm Appointment", style: TextStyle(color: Colors.white)),
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        if (isEditing && existingAppointment != null) {
+                          final updatedAppointment = Appointment(
+                            doctor: controller.selectedDoctor.value,
+                            date: controller.selectedDate.value!,
+                            time: controller.selectedTime.value!,
+                            symptoms: controller.symptoms.value,
+                            status: existingAppointment!.status, // preserve status
+                          );
+                          controller.editAppointment(existingAppointment!, updatedAppointment);
+                        } else {
+                          controller.confirmAppointment();
+                        }
+
+                        Get.dialog(
+                          AlertDialog(
+                            title: Text("Success"),
+                            content: Text(
+                              "Appointment ${isEditing ? 'updated' : 'booked'} with ${controller.selectedDoctor.value} "
+                                  "on ${DateFormat('yyyy-MM-dd').format(controller.selectedDate.value!)} at "
+                                  "${controller.selectedTime.value!.format(context)}.\n\nSymptoms: ${controller.symptoms.value}",
                             ),
-                          ],
-                        ),
-                      );
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Get.back(); // close dialog
+                                  Get.back(); // go back to appointments page
+                                  controller.resetForm();
+                                  symptomsController.clear();
+                                },
+                                child: const Text("OK"),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
                     }
-                  },
                 ),
               ),
             ],

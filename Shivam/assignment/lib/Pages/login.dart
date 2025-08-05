@@ -80,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 onPressed: () {
                  Get.to(DashboardPage());
-                 Get.snackbar("Log In",colorText: Colors.white, "Login Successful",snackStyle: SnackStyle.FLOATING,snackPosition: SnackPosition.BOTTOM,backgroundColor: Colors.blueAccent);
+                 Get.snackbar("Log In",colorText: Colors.white, "Login Successful",snackStyle: SnackStyle.FLOATING,snackPosition: SnackPosition.BOTTOM,backgroundColor: Colors.blueAccent,duration: Duration(milliseconds: 5));
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12.0),

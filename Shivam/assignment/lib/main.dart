@@ -3,7 +3,12 @@ import 'package:assignment/practice.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-void main() => runApp(const MyApp());
+import 'Controller/appointment_controller.dart';
+
+void main() {
+  Get.put(AppointmentController());
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
