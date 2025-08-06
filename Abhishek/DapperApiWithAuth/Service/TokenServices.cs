@@ -10,6 +10,7 @@ namespace DapperApiWithAuth.Service
 {
     public interface ITokenService
     {
+        // CreateToken method banaya gaya hai jiska kaam hoga JWT token generate karna
         string CreateToken(User user);
     }
     public class TokenServices : ITokenService
@@ -26,7 +27,11 @@ namespace DapperApiWithAuth.Service
                 new Claim(ClaimTypes.Name, user.Username),
             };
 
+            // SymmetricSecurityKey = secret key jo JWT ko sign karegi
+            // 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["jwt:key"]));
+
+            // SigningCredentials = JWT ko kaunsi algorithm se sign karna hai? Yahan HMAC-SHA512.
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
             var Token = new JwtSecurityToken(

@@ -66,7 +66,7 @@ namespace DapperApiWithAuth.Controllers
 
                 var token = _tokenService.CreateToken(user);
 
-                return Ok(new { token }); // Return token in response
+                return Ok(new { token ="Bearer " +token  }); // Return token in response
             }
             catch (Exception ex)
             {

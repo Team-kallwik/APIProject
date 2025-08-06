@@ -19,6 +19,8 @@ namespace DapperApiWithAuth.Controllers
             _logger = logger;
         }
         [HttpGet]
+
+        // ActionResult<> allows you to return different kinds of HTTP responses 200 OK, 404 NotFound, 500 Server Error
         public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetAll() 
         {
             try

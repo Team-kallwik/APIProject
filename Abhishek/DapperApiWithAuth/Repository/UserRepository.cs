@@ -1,23 +1,21 @@
-﻿using DapperApiWithAuth.Interfaces;
+﻿using Dapper;
+using DapperApiWithAuth.Interfaces;
 using DapperApiWithAuth.Models;
-using Dapper;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
+using System.Data;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace DapperApiWithAuth.Repository
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : GenericRepository<User>, IUserRepository
     {
-        private readonly IConfiguration _config;
-        private readonly ILogger<UserRepository> _logger;
         public UserRepository(IConfiguration config, ILogger<UserRepository> logger)
+            : base(config, logger, "User")
         {
-            _config = config;
-            _logger = logger;
         }
-
         public async Task RegisterAsync(User user)
         {
             try
@@ -25,26 +23,26 @@ namespace DapperApiWithAuth.Repository
                 using var conn = new MySqlConnection(_config.GetConnectionString("MySqlConnection"));
                 await conn.OpenAsync();
 
-                var userJson = JsonSerializer.Serialize(new
+                var json = JsonSerializer.Serialize(user, new JsonSerializerOptions
                 {
-                    username = user.Username,
-                    passwordHash = user.PasswordHash,
-                    email = user.Email
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 });
+
                 var parameters = new DynamicParameters();
-                parameters.Add("UserJson", userJson);
+                parameters.Add("userJson", json, DbType.String);  // Use exact param name from SP
 
-                await conn.ExecuteAsync("RegisterUserJson", parameters, commandType: System.Data.CommandType.StoredProcedure);
-                _logger.LogInformation("User registered: {Username}", user.Username);
+                await conn.ExecuteAsync("RegisterUserJson", parameters, commandType: CommandType.StoredProcedure);
 
+                _logger.LogInformation("User registered.");
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
-                _logger.LogError(ex, "Error During User Registered");
+                _logger.LogError(ex, "Error registering user");
                 throw;
-            
             }
         }
+
+
         public async Task<User> GetByUsernameAsync(string username)
         {
             try
@@ -56,12 +54,10 @@ namespace DapperApiWithAuth.Repository
                 parameters.Add("uname", username);
 
                 return await conn.QuerySingleOrDefaultAsync<User>("GetUserByUsername", parameters, commandType: System.Data.CommandType.StoredProcedure);
-
-
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
-                _logger.LogError(ex, "error fatching by username");
+                _logger.LogError(ex, "Error fetching user by username");
                 throw;
             }
         }
