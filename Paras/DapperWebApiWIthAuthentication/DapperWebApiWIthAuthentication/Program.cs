@@ -57,7 +57,7 @@ builder.Services.AddSwaggerGen(c =>
 
 //  Register Services
 builder.Services.AddScoped<DapperContext>();
-builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IGenericRepository<Employee>, GenericRepository<Employee>>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<EncryptionHelper>();
 
