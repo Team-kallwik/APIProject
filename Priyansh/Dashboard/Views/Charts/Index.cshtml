@@ -1,0 +1,83 @@
+﻿@{
+    ViewBag.Title = "Charts";
+}
+
+<div class="p-6 bg-white rounded-2xl shadow-md border border-gray-300 text-gray-900">
+    <h2 class="text-2xl font-bold mb-6 text-gray-900">Charts</h2>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-300 text-gray-900">
+            <h4 class="text-lg font-semibold text-gray-900 mb-4">Sales This Month</h4>
+            <div class="w-full h-80">
+                <canvas id="chartsSalesChart"></canvas>
+            </div>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-300 text-gray-900">
+            <h4 class="text-lg font-semibold text-gray-900 mb-4">Orders by Category</h4>
+            <div class="w-full h-80">
+                <canvas id="ordersByCategoryChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Sales Chart (Bar Chart)
+        const salesCtx = document.getElementById('chartsSalesChart');
+        if (salesCtx) {
+            new Chart(salesCtx.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                    datasets: [{
+                        label: 'Sales (Rs)',
+                        data: [1500, 2200, 3100, 4800, 2500, 3700, 5100],
+                        backgroundColor: 'rgba(55, 65, 81, 0.7)',
+                        borderColor: 'rgb(55, 65, 81)',
+                        borderWidth: 1,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        const ordersByCategoryCtx = document.getElementById('ordersByCategoryChart');
+        if (ordersByCategoryCtx) {
+            new Chart(ordersByCategoryCtx.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Electronics', 'Apparel', 'Books', 'Home Goods'],
+                    datasets: [{
+                        label: 'Orders',
+                        data: [300, 150, 100, 200],
+                        backgroundColor: [
+                            'rgba(156, 163, 175, 0.8)',
+                            'rgba(107, 114, 128, 0.8)',
+                            'rgba(75, 85, 99, 0.8)',
+                            'rgba(55, 65, 81, 0.8)',
+                        ],
+                        hoverOffset: 4,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+    });
+</script>

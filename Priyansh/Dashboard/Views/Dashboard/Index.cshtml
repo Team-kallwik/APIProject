@@ -1,0 +1,204 @@
+﻿@{
+    ViewBag.Title = "Admin Dashboard";
+}
+
+<header class="flex flex-col sm:flex-row justify-between items-center mb-8">
+    <h2 class="text-3xl font-bold text-gray-900">Dashboard Overview</h2>
+    <div class="relative w-full sm:w-auto mt-4 sm:mt-0">
+        <input type="text" placeholder="Search..." class="w-full sm:w-64 p-3 pr-10 rounded-xl bg-white text-gray-900 placeholder-gray-500 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200">
+        <svg class="lucide lucide-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+    </div>
+</header>
+
+<!-- Stats Cards Section -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Total Orders Card -->
+    <div class="bg-white text-gray-900 rounded-2xl p-6 shadow-md border border-gray-300 transform hover:scale-105 transition-transform duration-300 cursor-pointer">
+        <div class="flex justify-between items-center">
+            <span class="text-sm font-medium opacity-80">Total Orders</span>
+            <svg class="lucide lucide-shopping-bag" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4" /><path d="M3 6h18" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
+        </div>
+        <h3 class="text-4xl font-extrabold mt-2">1,254</h3>
+    </div>
+    <!-- Total Sales Card -->
+    <div class="bg-white text-gray-900 rounded-2xl p-6 shadow-md border border-gray-300 transform hover:scale-105 transition-transform duration-300 cursor-pointer">
+        <div class="flex justify-between items-center">
+            <span class="text-sm font-medium opacity-80">Total Sales</span>
+            <svg class="lucide lucide-indian-rupee" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12" /><path d="M6 8h12" /><path d="m6 13 8.5 8" /><path d="M6 13h3" /><path d="M9 13c6.667 0 6.667-10 0-10" />
+            </svg>
+        </div>
+        <h3 class="text-4xl font-extrabold mt-2">Rs.81,900</h3>
+    </div>
+    <!-- New Customers Card -->
+    <div class="bg-white text-gray-900 rounded-2xl p-6 shadow-md border border-gray-300 transform hover:scale-105 transition-transform duration-300 cursor-pointer">
+        <div class="flex justify-between items-center">
+            <span class="text-sm font-medium opacity-80">New Customers</span>
+            <svg class="lucide lucide-users" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+        </div>
+        <h3 class="text-4xl font-extrabold mt-2">156</h3>
+    </div>
+    <!-- Products in Stock Card -->
+    <div class="bg-white text-gray-900 rounded-2xl p-6 shadow-md border border-gray-300 transform hover:scale-105 transition-transform duration-300 cursor-pointer">
+        <div class="flex justify-between items-center">
+            <span class="text-sm font-medium opacity-80">Products in Stock</span>
+            <svg class="lucide lucide-box" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z" /><path d="M7 6v12" /><path d="M12 6v12" /><path d="M17 6v12" /><path d="M7 6h10" /></svg>
+        </div>
+        <h3 class="text-4xl font-extrabold mt-2">274</h3>
+    </div>
+</div>
+<!-- Charts and Graphs Section -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Sales Chart Card -->
+    <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-300 text-gray-900">
+        <h4 class="text-lg font-semibold text-gray-900 mb-4">Sales This Month</h4>
+        <div class="w-full h-80">
+            <canvas id="salesChart"></canvas>
+        </div>
+    </div>
+    <!-- Orders by Category Chart -->
+    <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-300 text-gray-900">
+        <h4 class="text-lg font-semibold text-gray-900 mb-4">Orders by Category</h4>
+        <div class="w-full h-80">
+            <canvas id="ordersChart"></canvas>
+        </div>
+    </div>
+</div>
+<!-- Recent Orders Table -->
+<div class="bg-white p-6 rounded-2xl shadow-md border border-gray-300 overflow-x-auto text-gray-900">
+    <h4 class="text-lg font-semibold text-gray-900 mb-4">Recent Orders</h4>
+    <table class="min-w-full divide-y divide-gray-300">
+        <thead class="bg-gray-100">
+            <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Order ID</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Customer</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Status</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Total</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Date</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">#98761</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Vikas Tiwari</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Completed</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rs.72000.00</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">2023-10-25</td>
+            </tr>
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">#98762</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Paras Vanve</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rs.7500.50</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">2023-10-24</td>
+            </tr>
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">#98763</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Abhishek Sharma</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Cancelled</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rs.450.00</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">2023-10-23</td>
+            </tr>
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">#98764</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Shivam Gour</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-white-800">Return</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rs.9900.99</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">2023-10-22</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</div>
+
+@section Scripts {
+    <!-- The Lucide script must be here before the main script block -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Function to load all Lucide icons
+            lucide.createIcons();
+
+            // Mobile menu toggle functionality
+            const menuBtn = document.getElementById('menu-btn');
+            const sidebar = document.getElementById('sidebar');
+
+            // Check if elements exist before adding event listeners to prevent errors
+            if (menuBtn && sidebar) {
+                menuBtn.addEventListener('click', () => {
+                    sidebar.classList.toggle('-translate-x-full');
+                });
+            }
+
+            // Initialize charts using static data
+            // Sales Chart (Bar Chart)
+            const salesCtx = document.getElementById('salesChart').getContext('2d');
+            new Chart(salesCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                    datasets: [{
+                        label: 'Monthly Sales (Rs)',
+                        data: [1200, 1900, 3000, 5000, 2000, 3500, 4800],
+                        backgroundColor: 'rgba(107, 114, 128, 0.6)', // Gray-500 with opacity
+                        borderColor: 'rgb(107, 114, 128)', // Gray-500
+                        borderWidth: 1,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Orders by Category Chart (Doughnut Chart)
+            const ordersCtx = document.getElementById('ordersChart').getContext('2d');
+            new Chart(ordersCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Electronics', 'Apparel', 'Books', 'Home Goods'],
+                    datasets: [{
+                        label: 'Orders',
+                        data: [300, 150, 100, 200],
+                        backgroundColor: [
+                            'rgba(156, 163, 175, 0.8)',  // Gray-400
+                            'rgba(107, 114, 128, 0.8)',  // Gray-500
+                            'rgba(75, 85, 99, 0.8)',     // Gray-700
+                            'rgba(55, 65, 81, 0.8)'      // Gray-800
+                        ],
+                        hoverOffset: 4,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

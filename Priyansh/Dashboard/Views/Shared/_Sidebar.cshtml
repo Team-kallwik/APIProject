@@ -1,0 +1,51 @@
+﻿@* @{
+    string active = ViewBag.ActivePage as string ?? "";
+}
+<aside id="sidebar" class="sidebar">
+    <a href="@Url.Action("Index", "Home")" class="sidebar-brand">
+        <i class="fas fa-rocket me-2"></i> <span>Admin Panel</span>
+    </a>
+    <hr class="sidebar-sep" />
+    <ul class="sidebar-nav">
+        <li>
+            <a class="nav-link @(active == "Dashboard" ? "active" : "")" href="@Url.Action("Index", "Home")">
+                <i class="fas fa-gauge"></i><span>Dashboard</span>
+            </a>
+        </li>
+        <li>
+            <a class="nav-link @(active == "Orders" ? "active" : "")" href="@Url.Action("Orders", "Home")">
+                <i class="fas fa-cart-shopping"></i><span>Orders</span>
+            </a>
+        </li>
+        <li>
+            <a class="nav-link @(active == "Products" ? "active" : "")" href="@Url.Action("Products", "Home")">
+                <i class="fas fa-box"></i><span>Products</span>
+            </a>
+        </li>
+        <li>
+            <a class="nav-link @(active == "Sales" ? "active" : "")" href="@Url.Action("Sales", "Home")">
+                <i class="fas fa-chart-line"></i><span>Sales</span>
+            </a>
+        </li>
+        <li>
+            <a class="nav-link @(active == "Analytics" ? "active" : "")" href="@Url.Action("Index", "Home")#analytics">
+                <i class="fas fa-chart-pie"></i><span>Analytics</span>
+            </a>
+        </li>
+        <li>
+            <a class="nav-link @(active == "Customers" ? "active" : "")" href="@Url.Action("Customers", "Home")">
+                <i class="fas fa-users"></i><span>Customers</span>
+            </a>
+        </li>
+        <li>
+            <a class="nav-link @(active == "Reports" ? "active" : "")" href="@Url.Action("Reports", "Home")">
+                <i class="fas fa-file-lines"></i><span>Reports</span>
+            </a>
+        </li>
+        <li>
+            <a class="nav-link @(active == "Settings" ? "active" : "")" href="@Url.Action("Settings", "Home")">
+                <i class="fas fa-gear"></i><span>Settings</span>
+            </a>
+        </li>
+    </ul>
+</aside> *@
